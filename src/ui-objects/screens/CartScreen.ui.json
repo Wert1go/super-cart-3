@@ -1,0 +1,215 @@
+{
+  "name": "CartScreen",
+  "figmaNodeId": "1:2",
+  "figmaFileKey": "8uBQD7Rzg2Ktk3vZ8l6VnU",
+  "sourcePath": "Page 1 / app prototype",
+  "referenceImage": "Assets/figma/screens/cart-screen.png",
+  "dimensions": {
+    "original": { "width": 590, "height": 1280 },
+    "target": { "width": 428, "height": 926 }
+  },
+  "structure": {
+    "fixedTop": [
+      "SafeAreaTop",
+      "StatusBar",
+      "Header"
+    ],
+    "scrollableContent": [
+      "StoreSelector",
+      "DeliverySummary",
+      "CartItems",
+      "Recommendations"
+    ],
+    "fixedBottom": [
+      "CheckoutBlock",
+      "TabBar",
+      "SafeAreaBottom"
+    ]
+  },
+  "components": [
+    {
+      "id": "status-bar",
+      "name": "StatusBar",
+      "figmaNodeId": "1:107",
+      "type": "fixed",
+      "position": "top",
+      "height": 54,
+      "elements": [
+        { "id": "time", "value": "1:09", "position": "left" },
+        { "id": "signal", "icon": "Assets/figma/icons/signal-icon.png" },
+        { "id": "network", "value": "LTE" },
+        { "id": "battery", "icon": "Assets/figma/icons/battery-icon.png" }
+      ]
+    },
+    {
+      "id": "header",
+      "name": "Header",
+      "figmaNodeId": "1:102",
+      "type": "fixed",
+      "position": "top",
+      "height": 53,
+      "elements": [
+        { "id": "title", "value": "Корзина", "position": "center" },
+        { "id": "share", "icon": "Assets/figma/icons/share-icon.png" },
+        { "id": "search", "icon": "Assets/figma/icons/search-icon.png" },
+        { "id": "trash", "icon": "Assets/figma/icons/trash-icon.png" }
+      ]
+    },
+    {
+      "id": "store-selector",
+      "name": "StoreSelector",
+      "figmaNodeId": "1:93",
+      "type": "scrollable",
+      "height": 70,
+      "stores": [
+        {
+          "id": "small-store",
+          "name": "Лавка удома",
+          "deliveryTime": "15-30 мин",
+          "selected": false
+        },
+        {
+          "id": "big-store",
+          "name": "Большая Лавка",
+          "deliveryTime": "60-90 мин",
+          "selected": true
+        }
+      ]
+    },
+    {
+      "id": "delivery-summary",
+      "name": "DeliverySummary",
+      "figmaNodeId": "1:86",
+      "type": "scrollable",
+      "height": 90,
+      "data": {
+        "deliveryTime": "60-90 мин",
+        "deliveryPrice": "249 р",
+        "freeDeliveryRemaining": "2 302 р",
+        "progressBar": "Assets/figma/components/delivery-progress-bar.png",
+        "infoIcon": "Assets/figma/icons/delivery-info-icon.png"
+      }
+    },
+    {
+      "id": "cart-items",
+      "name": "CartItems",
+      "figmaNodeId": "1:133",
+      "type": "scrollable",
+      "items": [
+        {
+          "id": "product-1",
+          "figmaNodeId": "1:76",
+          "image": "Assets/figma/components/product-ice-cream.png",
+          "name": "Мороженое миндальное Из Лавки с печеньем",
+          "price": "499Р",
+          "weight": "330Г",
+          "quantity": 1
+        },
+        {
+          "id": "product-2",
+          "figmaNodeId": "1:64",
+          "image": "Assets/figma/components/product-drink.png",
+          "name": "Напиток Drive Me Max Оригинальный",
+          "price": "99Р",
+          "weight": "449 мл",
+          "quantity": 1
+        }
+      ]
+    },
+    {
+      "id": "recommendations",
+      "name": "Recommendations",
+      "figmaNodeId": "1:38",
+      "type": "scrollable",
+      "title": "Порадовать себя",
+      "background": "Assets/figma/components/recommendations-bg.png",
+      "items": [
+        {
+          "id": "rec-1",
+          "image": "Assets/figma/components/recommended-product-1.png",
+          "addButton": "Assets/figma/icons/add-button-1.png",
+          "price": "279Р"
+        },
+        {
+          "id": "rec-2",
+          "image": "Assets/figma/components/recommended-product-2.png",
+          "addButton": "Assets/figma/icons/add-button-2.png",
+          "price": "238Р"
+        },
+        {
+          "id": "rec-3",
+          "image": "Assets/figma/components/recommended-product-3.png",
+          "addButton": "Assets/figma/icons/add-button-3.png",
+          "price": "50Р"
+        },
+        {
+          "id": "rec-4",
+          "image": "Assets/figma/components/recommended-product-4.png",
+          "addButton": "Assets/figma/icons/add-button-4.png",
+          "price": "159Р"
+        },
+        {
+          "id": "rec-5",
+          "image": "Assets/figma/components/recommended-product-5.png",
+          "addButton": "Assets/figma/icons/add-button-5.png",
+          "price": "109Р"
+        }
+      ]
+    },
+    {
+      "id": "checkout-block",
+      "name": "CheckoutBlock",
+      "figmaNodeId": "1:21",
+      "type": "fixed",
+      "position": "bottom",
+      "discount": {
+        "icon": "Assets/figma/icons/discount-icon.png",
+        "badge": "Assets/figma/icons/discount-badge-bg.png",
+        "badgeText": "+6",
+        "text": "200 Р при заказе от 2500 Р",
+        "promoText": "Другие промокоды",
+        "moreIcon": "Assets/figma/icons/more-info-icon.png",
+        "toggle": "Assets/figma/icons/toggle-icon.png"
+      },
+      "button": {
+        "deliveryTime": "60-90 мин",
+        "label": "К оплате",
+        "total": "847"
+      }
+    },
+    {
+      "id": "tabbar",
+      "name": "TabBar",
+      "figmaNodeId": "1:9",
+      "type": "fixed",
+      "position": "bottom",
+      "height": 96,
+      "tabs": [
+        {
+          "id": "lavka",
+          "icon": "Assets/figma/icons/lavka-tab-icon.png",
+          "active": false
+        },
+        {
+          "id": "grocery",
+          "icon": "Assets/figma/icons/grocery-tab-icon.png",
+          "active": false
+        },
+        {
+          "id": "food",
+          "icon": "Assets/figma/icons/food-tab-icon.png",
+          "active": false
+        },
+        {
+          "id": "cart",
+          "icon": "Assets/figma/icons/cart-tab-icon.png",
+          "badge": "2",
+          "badgeBg": "Assets/figma/icons/cart-badge-bg.png",
+          "active": true
+        }
+      ]
+    }
+  ]
+}
+
+

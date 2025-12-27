@@ -1,0 +1,87 @@
+{
+  "StatusBar": {
+    "figmaName": "App bar",
+    "figmaNodeId": "1:107",
+    "props": ["time", "signalIcon", "networkType", "batteryIcon"],
+    "variants": {}
+  },
+  "Header": {
+    "figmaName": "App header",
+    "figmaNodeId": "1:102",
+    "props": ["title", "shareIcon", "searchIcon", "trashIcon"],
+    "variants": {}
+  },
+  "StoreSelector": {
+    "figmaName": "store selector",
+    "figmaNodeId": "1:93",
+    "props": ["stores", "selectedStoreId", "onStoreSelect"],
+    "variants": {}
+  },
+  "StoreButton": {
+    "figmaName": "store button",
+    "figmaNodeId": "1:94",
+    "props": ["name", "deliveryTime", "selected"],
+    "variants": {
+      "size": ["small", "big"],
+      "selected": ["true", "false"]
+    }
+  },
+  "DeliverySummary": {
+    "figmaName": "Delivery summary",
+    "figmaNodeId": "1:86",
+    "props": ["deliveryTime", "deliveryPrice", "freeDeliveryRemaining", "onInfoClick"],
+    "variants": {}
+  },
+  "CartItem": {
+    "figmaName": "Product in the cart",
+    "figmaNodeId": "1:76",
+    "props": ["image", "name", "price", "weight", "quantity", "onIncrement", "onDecrement"],
+    "variants": {}
+  },
+  "QuantityController": {
+    "figmaName": "product count controller",
+    "figmaNodeId": "1:77",
+    "props": ["quantity", "onIncrement", "onDecrement"],
+    "variants": {}
+  },
+  "Recommendations": {
+    "figmaName": "Reccomendations",
+    "figmaNodeId": "1:38",
+    "props": ["title", "items"],
+    "variants": {}
+  },
+  "RecommendedProduct": {
+    "figmaName": "Recommended product",
+    "figmaNodeId": "1:57",
+    "props": ["image", "price", "onAdd"],
+    "variants": {}
+  },
+  "CheckoutBlock": {
+    "figmaName": "checkout block",
+    "figmaNodeId": "1:21",
+    "props": ["discount", "deliveryTime", "total", "onCheckout"],
+    "variants": {}
+  },
+  "CheckoutButton": {
+    "figmaName": "checkout button",
+    "figmaNodeId": "1:22",
+    "props": ["deliveryTime", "label", "total", "onClick"],
+    "variants": {}
+  },
+  "TabBar": {
+    "figmaName": "Tabbar",
+    "figmaNodeId": "1:9",
+    "props": ["tabs", "activeTabId", "onTabSelect"],
+    "variants": {}
+  },
+  "TabButton": {
+    "figmaName": "Cart button",
+    "figmaNodeId": "1:10",
+    "props": ["icon", "badge", "active", "onClick"],
+    "variants": {
+      "active": ["true", "false"],
+      "hasBadge": ["true", "false"]
+    }
+  }
+}
+

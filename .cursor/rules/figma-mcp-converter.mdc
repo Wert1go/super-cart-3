@@ -1,0 +1,385 @@
+# Cursor Rule: Figma (MCP) → UI Objects → iOS Replica (Web)
+
+## Scope
+Applies to all files involved in converting Figma designs via MCP into implementation-ready UI objects and building an iOS replica app using plain JavaScript + React in web browser.
+
+## Purpose
+Create a repeatable, low-ambiguity pipeline from Figma → structured UI objects → web-based iOS replica, while preserving original design references in `Assets/` and generating artifacts for consistent implementation.
+
+---
+
+## Pipeline Overview
+
+The workflow is a strict 4-step pipeline:
+
+1. **Ingest** — Pull Figma data via MCP (frames, components, styles, assets)
+2. **Download Assets** — Save ALL images from Figma MCP to local files
+3. **Normalize** — Create UI objects (stable intermediate representation)
+4. **Implement** — Build React components from UI objects with correct structure
+
+**Never skip steps. Never jump from raw Figma to code.**
+
+---
+
+## Step 1: Ingest Figma via MCP
+
+### What to Extract
+- Frame hierarchy and dimensions
+- Component instances and their variants
+- Text content and styles (font, size, weight, color)
+- Colors and fills
+- Auto Layout properties (direction, gap, padding, alignment)
+- All image assets (product photos, icons, backgrounds)
+
+### Capture Device Dimensions
+- Record the root frame dimensions (e.g., 390×844 for iPhone 14)
+- These become the base dimensions for the replica viewport
+- All internal measurements are relative to these dimensions
+
+---
+
+## Step 2: Download Assets (CRITICAL)
+
+### Mandatory Asset Download
+- **Download ALL images from Figma MCP** — do not use placeholder URLs
+- Use the MCP asset endpoint to fetch actual image data
+- Save files with descriptive kebab-case names
+
+### Asset Organization
+```
+Assets/
+└── figma/
+    ├── screens/           # Full screen reference images
+    │   └── cart-screen.png
+    ├── components/        # Component reference images
+    │   ├── product-image-1.png
+    │   ├── product-image-2.png
+    │   └── recommended-product-1.png
+    └── icons/             # Icons and UI elements
+        ├── plus-icon.png
+        ├── minus-icon.png
+        ├── cart-icon.png
+        └── search-icon.png
+```
+
+### Asset Naming Convention
+- Use kebab-case: `product-image-1.png`, `cart-icon.png`
+- Include index for multiple similar items: `recommended-product-1.png`, `recommended-product-2.png`
+- Be descriptive: `delivery-progress-bar.png` not `image-5.png`
+
+### Path References in Code
+- Always use relative paths from HTML root: `Assets/figma/icons/plus-icon.png`
+- Never use absolute URLs or placeholder services
+- Never embed base64 in code
+
+---
+
+## Step 3: Normalize into UI Objects
+
+### UI Object Files
+- Store in `src/ui-objects/`
+- One file per screen: `src/ui-objects/screens/<ScreenName>.ui.json`
+- One file per reusable component: `src/ui-objects/components/<ComponentName>.ui.json`
+
+### Required UI Object Fields
+```json
+{
+  "name": "CartScreen",
+  "figmaNodeId": "123:456",
+  "figmaFileKey": "abc123",
+  "sourcePath": "Mobile App / Cart / Main",
+  "referenceImage": "Assets/figma/screens/cart-screen.png",
+  "dimensions": { "width": 390, "height": 844 },
+  "structure": {
+    "fixedTop": ["SafeAreaTop", "StatusBar", "Header"],
+    "scrollableContent": ["StoreSelector", "DeliverySummary", "CartItems", "Recommendations"],
+    "fixedBottom": ["CheckoutBlock", "TabBar", "SafeAreaBottom"]
+  },
+  "components": [...],
+  "tokens": {...}
+}
+```
+
+### Structure Classification (CRITICAL)
+Classify every element into one of three layers:
+- **fixedTop** — Does NOT scroll (status bar, header)
+- **scrollableContent** — Scrolls internally
+- **fixedBottom** — Does NOT scroll (CTA, tab bar)
+
+This classification drives the HTML/CSS structure directly.
+
+### Layout Normalization
+Convert Figma Auto Layout to explicit CSS Flexbox:
+```json
+{
+  "layout": {
+    "display": "flex",
+    "flexDirection": "column",
+    "gap": 16,
+    "padding": "20px",
+    "alignItems": "stretch"
+  }
+}
+```
+
+---
+
+## Step 4: Implement with Correct Structure
+
+### HTML/JSX Structure Template
+```jsx
+<div className="device-scale-wrapper">
+  <div className="app-viewport">
+    {/* FIXED TOP - Never scrolls */}
+    <div className="safe-area-top"></div>
+    <StatusBar />
+    <Header />
+    
+    {/* SCROLLABLE CONTENT - Only this scrolls */}
+    <div className="content-area">
+      <Section1 />
+      <Section2 />
+      <Section3 />
+    </div>
+    
+    {/* FIXED BOTTOM - Never scrolls */}
+    <PrimaryCTA />
+    <TabBar />
+    <div className="safe-area-bottom"></div>
+  </div>
+</div>
+```
+
+### CSS Structure Template
+```css
+/* Scale wrapper for desktop viewing */
+.device-scale-wrapper {
+  zoom: 1.8;  /* Use zoom, NOT transform: scale() */
+}
+
+/* Device frame */
+.app-viewport {
+  width: 428px;
+  height: 926px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Fixed elements */
+.safe-area-top,
+.header,
+.tab-bar,
+.safe-area-bottom {
+  flex-shrink: 0;  /* Prevent compression */
+}
+
+/* Scrollable area */
+.content-area {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+}
+```
+
+---
+
+## Design Tokens
+
+### Token File Location
+`src/design/tokens.json`
+
+### Required Token Categories
+```json
+{
+  "colors": {
+    "background": "#f8f8f8",
+    "surface": "#ffffff",
+    "separator": "#e5e5ea",
+    "textPrimary": "#000000",
+    "textSecondary": "#8e8e93",
+    "accent": "#34c759"
+  },
+  "typography": {
+    "headingLarge": { "size": 28, "weight": 700, "letterSpacing": -0.5 },
+    "headingMedium": { "size": 22, "weight": 700, "letterSpacing": -0.4 },
+    "body": { "size": 17, "weight": 400 },
+    "caption": { "size": 13, "weight": 400 }
+  },
+  "spacing": {
+    "xs": 4,
+    "sm": 8,
+    "md": 16,
+    "lg": 20,
+    "xl": 24
+  },
+  "radii": {
+    "sm": 8,
+    "md": 12,
+    "lg": 16,
+    "xl": 55
+  }
+}
+```
+
+---
+
+## Component Registry
+
+### File Location
+`src/components/registry.json`
+
+### Registry Format
+```json
+{
+  "QuantityController": {
+    "figmaName": "Quantity Stepper",
+    "props": ["quantity", "onIncrement", "onDecrement"],
+    "variants": {}
+  },
+  "ProductCard": {
+    "figmaName": "Product Item / Cart",
+    "props": ["image", "name", "price", "weight", "quantity"],
+    "variants": { "size": ["compact", "full"] }
+  }
+}
+```
+
+---
+
+## Common Mistakes to Avoid
+
+### Asset Handling
+- ❌ Using placeholder URLs (`https://via.placeholder.com/...`)
+- ❌ Leaving Figma MCP URLs in code (they expire)
+- ❌ Embedding base64 images
+- ✅ Download ALL assets to `Assets/figma/` and reference locally
+
+### Layout Structure
+- ❌ Putting Header inside scrollable content
+- ❌ Putting TabBar inside scrollable content
+- ❌ Putting Primary CTA inside scrollable content
+- ✅ Use three-layer architecture: fixedTop / scrollableContent / fixedBottom
+
+### Scaling
+- ❌ Using `transform: scale()` for device scaling (breaks layout flow)
+- ❌ Manually doubling every CSS value
+- ✅ Use `zoom: 1.8` on wrapper element
+
+### Sizing
+- ❌ Guessing sizes from visual inspection
+- ❌ Using arbitrary "nice-looking" values
+- ✅ Extract exact dimensions from Figma MCP data
+- ✅ Use design tokens for consistent values
+
+---
+
+## Quality Checklist
+
+Before considering a screen complete:
+
+- [ ] All images downloaded to `Assets/figma/`
+- [ ] All image paths in code reference local files
+- [ ] UI object file exists with structure classification
+- [ ] Tokens extracted and applied
+- [ ] Three-layer architecture implemented (fixed/scroll/fixed)
+- [ ] Device scaling uses `zoom`, not `transform: scale()`
+- [ ] Scrolling works only inside content-area
+- [ ] Touch targets are minimum 44×44px
+- [ ] Typography hierarchy matches iOS standards
+
+---
+
+## Examples (MANDATORY)
+
+### Asset Download
+
+Good:
+```javascript
+// Download from Figma MCP
+const imageData = await mcp.getAsset(nodeId);
+await fs.writeFile('Assets/figma/components/product-image-1.png', imageData);
+
+// Reference in code
+<img src="Assets/figma/components/product-image-1.png" alt="product" />
+```
+
+Bad:
+```javascript
+// Using placeholder - images won't load
+<img src="https://via.placeholder.com/80x80" alt="product" />
+
+// Using expired MCP URL
+<img src="http://localhost:3845/assets/temp-xyz" alt="product" />
+```
+
+### Structure Classification
+
+Good:
+```json
+{
+  "structure": {
+    "fixedTop": ["SafeAreaTop", "StatusBar", "Header"],
+    "scrollableContent": ["StoreSelector", "CartItems", "Recommendations"],
+    "fixedBottom": ["CheckoutBlock", "TabBar", "SafeAreaBottom"]
+  }
+}
+```
+
+Bad:
+```json
+{
+  "components": ["Header", "StoreSelector", "CartItems", "TabBar"]
+  // No structure classification - will result in wrong scroll behavior
+}
+```
+
+### Device Scaling
+
+Good:
+```css
+.device-scale-wrapper {
+  zoom: 1.8;
+  -moz-transform: scale(1.8);
+  -moz-transform-origin: top center;
+}
+```
+
+Bad:
+```css
+.device-scale-wrapper {
+  transform: scale(1.8);
+  /* Breaks layout flow, causes clipping */
+}
+```
+
+### Token Usage
+
+Good:
+```css
+.card {
+  background: var(--color-surface);
+  border-radius: var(--radius-lg);
+  padding: var(--spacing-lg);
+}
+```
+
+Bad:
+```css
+.card {
+  background: white;
+  border-radius: 16px;
+  padding: 20px;
+  /* Hard-coded values - inconsistent, hard to maintain */
+}
+```
+
+---
+
+## Constraints
+- Do not invent product behavior — mark unknown logic as `TODO`
+- Do not embed base64 assets in code
+- Do not skip the normalization step
+- Do not use transform: scale() for device scaling
+- Do not put fixed elements inside scrollable content

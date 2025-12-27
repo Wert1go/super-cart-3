@@ -1,0 +1,100 @@
+---
+globs: .cursor/rules/
+alwaysApply: false
+---
+# Cursor Rule: Writing Cursor Rules
+
+## Scope
+This rule applies to all files created or modified within the `.cursor/rules/` directory.
+
+## Purpose
+Ensure Cursor Rules are written in a consistent, clear, and enforceable way.
+Rules without concrete examples are considered incomplete and MUST NOT be applied.
+
+## General Principles
+- Rules must be **explicit, concise, and actionable**
+- Prefer **instructions over explanations**
+- Avoid philosophical or speculative language
+- Optimize for **predictable AI behavior**, not human readability alone
+
+## Mandatory Structure
+Every Cursor Rule MUST follow this structure.
+If any required section is missing, the rule is considered invalid.
+
+1. **Title**
+   - Short and descriptive
+   - Clearly states the intent of the rule
+
+2. **Scope**
+   - Explicitly state where the rule applies
+
+3. **Intent / Purpose**
+   - Why this rule exists
+   - What behavior it enforces or prevents
+
+4. **Rules**
+   - Use bullet points
+   - One instruction per bullet
+   - Use imperative form (e.g. “Use”, “Avoid”, “Always”, “Never”)
+
+5. **Examples (MANDATORY)**
+   - Every rule MUST contain a dedicated **Examples** section
+   - Examples must be **short, concrete, and unambiguous**
+   - Examples must demonstrate:
+     - At least one **correct** behavior
+     - At least one **incorrect** behavior (when applicable)
+   - Rules without examples MUST NOT be applied
+
+6. **Constraints (optional)**
+   - Hard limitations or forbidden actions
+   - Only include if necessary
+
+## Example Formatting Rules
+- Clearly label examples as `Good` and `Bad`
+- Examples must be realistic and minimal
+- Do not explain examples — let them demonstrate behavior
+
+## Example of a Proper Examples Section (MANDATORY REFERENCE)
+
+This is an example of how the **Examples** section itself MUST look in any Cursor Rule.
+
+### Examples
+
+Good:
+- Use imperative language in rules.
+- Place rules in the `.cursor/rules/` directory.
+- State the scope explicitly.
+
+Bad:
+- It would be nice to maybe use clearer wording.
+- Rules can live anywhere in the project.
+- The scope is obvious and does not need to be written.
+
+Any rule whose Examples section does not follow this pattern is considered invalid.
+
+## Language Rules
+- Write rules **only in English**
+- Use simple, unambiguous wording
+- Avoid synonyms when precision matters
+- Do not rely on context outside the rule text
+
+## Style Guidelines
+- No emojis
+- No rhetorical questions
+- No filler or motivational text
+- Prefer “must” over “should” for mandatory behavior
+
+## Maintenance
+- Rules should be **small and composable**
+- One rule = one responsibility
+- If a rule grows too large, split it into multiple rules
+
+## Prohibited Patterns
+- Rules without an Examples section
+- Examples without both Good and Bad cases
+- Vague instructions (e.g. “do it nicely”, “keep it clean”)
+- Conflicting rules within the same directory
+- References to undocumented project knowledge
+
+## Priority
+If multiple rules conflict, the most specific rule (closest to the file location) takes precedence.
