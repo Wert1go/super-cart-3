@@ -1,36 +1,5 @@
-/* ===== CSS Variables (Design Tokens) ===== */
-:root {
-  --color-bg-primary: #f4f4f4;
-  --color-bg-surface: #ffffff;
-  --color-bg-elevated: #fefefe;
-  --color-bg-yellow: #fce001;
-  --color-bg-yellow-border: #f4e550;
-  --color-bg-control: #eeedec;
-  
-  --color-text-primary: #393939;
-  --color-text-secondary: #666666;
-  --color-text-tertiary: #b8b8b8;
-  --color-text-muted: #b3b3b3;
-  --color-text-accent: #71c28f;
-  --color-text-button: #52430c;
-  --color-text-button-secondary: #68580d;
-  
-  --color-separator: #e3e3e3;
-  --color-border-default: #e6e6e6;
-  --color-border-active: #434343;
-  --color-badge-cart: #fbbaa3;
-  
-  --font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-  
-  --radius-sm: 15px;
-  --radius-md: 16px;
-  --radius-lg: 22px;
-  --radius-xl: 23px;
-  --radius-device: 55px;
-  
-  --safe-area-top: 47px;
-  --safe-area-bottom: 34px;
-}
+/* ===== Design Tokens Import ===== */
+@import './tokens.css';
 
 /* ===== Reset & Base ===== */
 * {

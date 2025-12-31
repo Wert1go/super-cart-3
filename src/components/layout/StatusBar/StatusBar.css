@@ -4,14 +4,14 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: #f4f4f4;
+  background: var(--color-bg-primary);
   flex-shrink: 0;
 }
 
 .status-bar__time {
-  font-size: 17px;
-  font-weight: 600;
-  color: #393939;
+  font-size: var(--font-size-status-time);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
 }
 
 .status-bar__right {
@@ -26,13 +26,12 @@
 }
 
 .status-bar__network {
-  font-size: 13px;
-  font-weight: 400;
-  color: #474747;
+  font-size: var(--font-size-status-network);
+  font-weight: var(--font-weight-regular);
+  color: var(--color-text-primary);
 }
 
 .status-bar__battery {
   height: 14px;
   width: auto;
 }
-

@@ -2,8 +2,8 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 0;
-  margin-bottom: 12px;
+  padding: var(--spacing-md) 0;
+  margin-bottom: var(--spacing-md);
 }
 
 .discount-section--disabled {
@@ -13,7 +13,7 @@
 .discount-section__left {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: var(--spacing-md);
 }
 
 .discount-section__icon-wrapper {
@@ -38,17 +38,17 @@
 }
 
 .discount-section__text {
-  font-size: 14px;
-  font-weight: 500;
-  color: #393939;
+  font-size: var(--font-size-checkout-discount);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
 }
 
 .discount-section__promo {
   display: flex;
   align-items: center;
-  gap: 4px;
-  font-size: 12px;
-  color: #8e8e93;
+  gap: var(--spacing-xs);
+  font-size: var(--font-size-checkout-promo);
+  color: var(--color-text-secondary);
   cursor: pointer;
 }
 
@@ -57,4 +57,3 @@
   height: 12px;
   opacity: 0.5;
 }
-

@@ -1,16 +1,15 @@
 .cart-empty {
-  padding: 40px 20px;
+  padding: 40px var(--spacing-xl);
   text-align: center;
-  color: #b8b8b8;
+  color: var(--color-text-tertiary);
 }
 
 .cart-empty__message {
   margin: 0;
-  font-size: 16px;
+  font-size: var(--font-size-sm);
 }
 
 .cart-empty__hint {
   font-size: 13px;
-  margin-top: 8px;
+  margin-top: var(--spacing-sm);
 }
-

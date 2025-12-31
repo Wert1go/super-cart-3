@@ -1,32 +1,31 @@
 .store-button {
   flex: 1;
-  padding: 14px 16px;
-  background: #ffffff;
-  border: 1px solid #e6e6e6;
-  border-radius: 16px;
+  padding: 14px var(--spacing-lg);
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border-default);
+  border-radius: var(--radius-md);
   cursor: pointer;
   text-align: center;
-  transition: all 0.2s;
+  transition: all var(--transition-fast);
 }
 
 .store-button:hover {
-  border-color: #ccc;
+  border-color: var(--color-text-tertiary);
 }
 
 .store-button--active {
-  border-color: #434343;
-  background: #fff;
+  border-color: var(--color-border-active);
+  background: var(--color-bg-surface);
 }
 
 .store-button__name {
-  font-size: 14px;
-  font-weight: 600;
-  color: #4a4a4a;
-  margin-bottom: 4px;
+  font-size: var(--font-size-store-name);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin-bottom: var(--spacing-xs);
 }
 
 .store-button__time {
-  font-size: 12px;
-  color: #8e8e93;
+  font-size: var(--font-size-store-time);
+  color: var(--color-text-secondary);
 }
-

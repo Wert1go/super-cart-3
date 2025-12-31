@@ -1,7 +1,6 @@
 .cart-list {
-  background: #ffffff;
-  margin: 0 16px;
-  border-radius: 16px;
+  background: var(--color-bg-surface);
+  margin: 0 var(--spacing-lg);
+  border-radius: var(--radius-md);
   overflow: hidden;
 }
-

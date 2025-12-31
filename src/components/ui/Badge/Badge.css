@@ -2,39 +2,38 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   border-radius: 9px;
 }
 
 .badge--default {
   min-width: 18px;
   height: 18px;
-  padding: 0 4px;
+  padding: 0 var(--spacing-xs);
   font-size: 11px;
-  background: #ff6b47;
-  color: white;
+  background: var(--color-badge-cart);
+  color: var(--color-bg-surface);
 }
 
 .badge--small {
   min-width: 18px;
   height: 18px;
-  padding: 0 4px;
+  padding: 0 var(--spacing-xs);
   font-size: 11px;
-  background: #eeedec;
-  color: #656665;
+  background: var(--color-bg-control);
+  color: var(--color-text-secondary);
   border-radius: 6px;
 }
 
 .badge--discount {
-  background: #eeedec;
-  color: #656665;
+  background: var(--color-bg-control);
+  color: var(--color-text-secondary);
   border-radius: 6px;
-  padding: 2px 4px;
+  padding: 2px var(--spacing-xs);
   font-size: 11px;
 }
 
 .badge--success {
-  background: #34c759;
-  color: white;
+  background: var(--color-text-accent);
+  color: var(--color-bg-surface);
 }
-

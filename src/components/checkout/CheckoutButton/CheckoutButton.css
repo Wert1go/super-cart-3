@@ -3,17 +3,17 @@
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  padding: 16px 20px;
-  background: linear-gradient(135deg, #fce001 0%, #f4e550 100%);
-  border: 1px solid #f4e550;
-  border-radius: 16px;
+  padding: var(--spacing-lg) var(--spacing-xl);
+  background: var(--gradient-checkout);
+  border: 1px solid var(--color-bg-yellow-border);
+  border-radius: var(--radius-md);
   cursor: pointer;
-  transition: all 0.2s;
+  transition: all var(--transition-fast);
   font-family: inherit;
 }
 
 .checkout-button:hover:not(.checkout-button--disabled) {
-  background: linear-gradient(135deg, #fce001 0%, #e8d94a 100%);
+  filter: brightness(0.98);
 }
 
 .checkout-button--disabled {
@@ -22,20 +22,19 @@
 }
 
 .checkout-button__time {
-  font-size: 14px;
-  font-weight: 400;
-  color: #68580d;
+  font-size: var(--font-size-checkout-time);
+  font-weight: var(--font-weight-regular);
+  color: var(--color-text-button-secondary);
 }
 
 .checkout-button__label {
-  font-size: 16px;
-  font-weight: 600;
-  color: #52430c;
+  font-size: var(--font-size-checkout-label);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-button);
 }
 
 .checkout-button__total {
-  font-size: 17px;
-  font-weight: 700;
-  color: #52430c;
+  font-size: var(--font-size-checkout-price);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-button);
 }
-

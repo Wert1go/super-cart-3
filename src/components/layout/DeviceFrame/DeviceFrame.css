@@ -3,10 +3,10 @@
 }
 
 .app-viewport {
-  width: 428px;
-  height: 926px;
-  background: #f4f4f4;
-  border-radius: 55px;
+  width: var(--device-width);
+  height: var(--device-height);
+  background: var(--color-bg-primary);
+  border-radius: var(--radius-device);
   overflow: hidden;
   display: flex;
   flex-direction: column;

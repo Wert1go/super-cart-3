@@ -1,0 +1,126 @@
+/**
+ * Design Tokens
+ * Auto-generated from Figma design system
+ * Source: src/design/tokens.json
+ */
+
+:root {
+  /* ===== Colors: Background ===== */
+  --color-bg-primary: #f4f4f4;
+  --color-bg-surface: #ffffff;
+  --color-bg-surface-elevated: #fefefe;
+  --color-bg-yellow: #fce001;
+  --color-bg-yellow-border: #f4e550;
+  --color-bg-control: #eeedec;
+
+  /* ===== Colors: Text ===== */
+  --color-text-primary: #393939;
+  --color-text-secondary: #666666;
+  --color-text-tertiary: #b8b8b8;
+  --color-text-muted: #b3b3b3;
+  --color-text-accent: #71c28f;
+  --color-text-button: #52430c;
+  --color-text-button-secondary: #68580d;
+
+  /* ===== Colors: UI ===== */
+  --color-separator: #e3e3e3;
+  --color-border-default: #e6e6e6;
+  --color-border-active: #434343;
+  --color-badge-cart: #fbbaa3;
+
+  /* ===== Typography: Font Family ===== */
+  --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+  /* ===== Typography: Font Sizes ===== */
+  --font-size-xs: 15px;
+  --font-size-sm: 16px;
+  --font-size-md: 18px;
+  --font-size-lg: 19px;
+  --font-size-xl: 22px;
+  --font-size-2xl: 23px;
+  --font-size-3xl: 25px;
+  --font-size-4xl: 28px;
+  --font-size-5xl: 29px;
+
+  /* ===== Typography: Font Weights ===== */
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* ===== Typography: Component-specific ===== */
+  /* Status Bar */
+  --font-size-status-time: 24px;
+  --font-size-status-network: 18px;
+  
+  /* Header */
+  --font-size-header-title: 23px;
+  
+  /* Delivery */
+  --font-size-delivery-primary: 29px;
+  --font-size-delivery-secondary: 18px;
+  --font-size-delivery-price: 15px;
+  
+  /* Store */
+  --font-size-store-name: 22px;
+  --font-size-store-time: 19px;
+  
+  /* Product */
+  --font-size-product-name: 18px;
+  --font-size-product-price: 19px;
+  --font-size-product-weight: 18px;
+  --font-size-product-counter: 19px;
+  
+  /* Recommendations */
+  --font-size-recommendations-title: 28px;
+  --font-size-recommendations-price: 18px;
+  
+  /* Checkout */
+  --font-size-checkout-time: 25px;
+  --font-size-checkout-label: 23px;
+  --font-size-checkout-price: 25px;
+  --font-size-checkout-discount: 23px;
+  --font-size-checkout-promo: 18px;
+  
+  /* Tab Bar */
+  --font-size-tabbar-badge: 16px;
+
+  /* ===== Spacing ===== */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 12px;
+  --spacing-lg: 16px;
+  --spacing-xl: 20px;
+  --spacing-2xl: 24px;
+
+  /* ===== Border Radius ===== */
+  --radius-sm: 15px;
+  --radius-md: 16px;
+  --radius-lg: 22px;
+  --radius-xl: 23px;
+  --radius-device: 55px;
+
+  /* ===== Device Dimensions ===== */
+  --device-width: 428px;
+  --device-height: 926px;
+  --device-scale-factor: 0.725;
+
+  /* ===== Safe Areas ===== */
+  --safe-area-top: 59px;
+  --safe-area-bottom: 34px;
+
+  /* ===== Gradients ===== */
+  --gradient-checkout: linear-gradient(180deg, #fce001 0%, #f4e550 100%);
+  --gradient-success: linear-gradient(90deg, #73d05f 0%, #2dc36b 100%);
+
+  /* ===== Shadows ===== */
+  --shadow-card: 0 2px 8px rgba(0, 0, 0, 0.08);
+  --shadow-button: 0 4px 12px rgba(0, 0, 0, 0.15);
+  --shadow-elevated: 0 8px 24px rgba(0, 0, 0, 0.12);
+
+  /* ===== Transitions ===== */
+  --transition-fast: 150ms ease;
+  --transition-normal: 250ms ease;
+  --transition-slow: 350ms ease;
+}
+

@@ -1,21 +1,21 @@
 .delivery-summary {
-  background: #ffffff;
-  margin: 0 16px 12px;
-  border-radius: 16px;
-  padding: 16px;
+  background: var(--color-bg-surface);
+  margin: 0 var(--spacing-lg) var(--spacing-md);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-lg);
 }
 
 .delivery-summary__header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 4px;
+  margin-bottom: var(--spacing-xs);
 }
 
 .delivery-summary__main {
-  font-size: 17px;
-  font-weight: 500;
-  color: #393939;
+  font-size: var(--font-size-delivery-primary);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
 }
 
 .delivery-summary__info-btn {
@@ -26,28 +26,27 @@
 }
 
 .delivery-summary__subtitle {
-  font-size: 13px;
-  color: #71c28f;
-  margin-bottom: 12px;
+  font-size: var(--font-size-delivery-secondary);
+  color: var(--color-text-accent);
+  margin-bottom: var(--spacing-md);
 }
 
 .delivery-summary__progress-labels {
   display: flex;
   justify-content: space-between;
-  margin-top: 8px;
+  margin-top: var(--spacing-sm);
 }
 
 .delivery-summary__progress-label {
-  font-size: 13px;
-  color: #71c28f;
+  font-size: var(--font-size-delivery-price);
+  color: var(--color-text-accent);
 }
 
 .delivery-summary__progress-label--success {
-  color: #34c759;
-  font-weight: 600;
+  color: var(--color-text-accent);
+  font-weight: var(--font-weight-semibold);
 }
 
 .delivery-summary__progress-label--end {
-  color: #b3b3b3;
+  color: var(--color-text-muted);
 }
-
