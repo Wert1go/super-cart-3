@@ -46,12 +46,12 @@ Assets/
 ```
 
 ### Asset Naming Convention
-- Use kebab-case: `product-image-1.png`, `cart-icon.png`
-- Include index for multiple similar items: `recommended-product-1.png`
-- Be descriptive: `delivery-progress-bar.png` not `image-5.png`
+- Use kebab-case: `item-image-1.png`, `action-icon.png`
+- Include index for multiple similar items: `list-item-1.png`, `list-item-2.png`
+- Be descriptive: `progress-indicator.png` not `image-5.png`
 
 ### Path References in Code
-- Always use relative paths from HTML root: `Assets/figma/icons/plus-icon.png`
+- Always use relative paths from HTML root: `Assets/figma/icons/icon-name.png`
 - Never use absolute URLs or placeholder services
 - Never embed base64 in code
 
@@ -87,10 +87,140 @@ Classify every element into one of three layers:
 
 ---
 
+## Step 3.5: Define TypeScript Types (BEFORE Implementation)
+
+### Rules
+- Create TypeScript types BEFORE implementing components
+- Extract interfaces from UI Object component props
+- One type file per domain
+- Store types in `src/types/`
+- Use `.tsx` for components, `.ts` for non-JSX files
+
+### Type Categories
+
+| Category | Description | Example |
+|----------|-------------|---------|
+| Data Types | Entities from the domain | `Item`, `Entity`, `Record` |
+| Props Types | Component input contracts | `ComponentNameProps` |
+| State Types | Hook return types | `Use[Domain]Return` |
+| Config Types | Static configuration | `TabConfig`, `OptionConfig` |
+
+### Type File Structure
+```
+src/types/
+├── [domain-a].ts      # Domain A entities
+├── [domain-b].ts      # Domain B entities
+├── ui.ts              # Common UI types
+├── config.ts          # Configuration types
+└── index.ts           # Barrel export
+```
+
+### Process
+1. Analyze UI Object `components` array → extract Props interfaces
+2. Analyze data shapes in design → extract entity interfaces
+3. Analyze interactive elements → extract state/action types
+4. Document optional vs required fields
+
+### Type Template
+```typescript
+// src/types/[domain].ts
+
+/** Entity representing a [domain] item */
+export interface DomainItem {
+  id: string;
+  name: string;
+  value: number;
+  // ... fields extracted from Figma component
+}
+
+/** Props for [Component] */
+export interface ComponentProps {
+  item: DomainItem;
+  onAction: (id: string) => void;
+  isActive?: boolean;  // Optional props marked with ?
+}
+
+/** Return type for use[Domain] hook */
+export interface UseDomainReturn {
+  items: DomainItem[];
+  total: number;
+  addItem: (item: DomainItem) => void;
+  removeItem: (id: string) => void;
+}
+```
+
+### Examples
+
+Good:
+```typescript
+// src/types/list.ts
+export interface ListItem {
+  id: string;
+  image: string;
+  title: string;
+  subtitle: string;
+  value: number;
+  quantity: number;
+}
+
+export interface ListItemProps {
+  item: ListItem;
+  onIncrement: () => void;
+  onDecrement: () => void;
+}
+
+// src/components/list/ListItem/ListItem.tsx
+import { ListItemProps } from '../../../types';
+
+export const ListItem: React.FC<ListItemProps> = ({ 
+  item, 
+  onIncrement, 
+  onDecrement 
+}) => {
+  return <div>...</div>;
+};
+```
+
+Bad:
+```javascript
+// No types - props are implicit
+export const ListItem = ({ item, onIncrement, onDecrement }) => {
+  // No type safety, no autocompletion, no documentation
+  return <div>{item.tilte}</div>; // Typo not caught
+};
+```
+
+---
+
 ## Step 4: Implement Layout Structure
 
+### Rules
+- Use `.tsx` extension for all React components
+- Use `.ts` extension for hooks, utils, constants
+- Import types from `src/types/`
+
+### Project Structure (TypeScript)
+```
+src/
+├── components/
+│   ├── ui/
+│   │   └── ComponentName/
+│   │       ├── ComponentName.tsx    # .tsx for components
+│   │       ├── ComponentName.css
+│   │       └── index.ts             # .ts for exports
+│   └── ...
+├── hooks/
+│   └── use[Domain].ts               # .ts for hooks
+├── types/
+│   └── [domain].ts                  # .ts for types
+├── constants/
+│   └── [domain].ts                  # .ts for constants
+└── utils/
+    └── [utility].ts                 # .ts for utils
+```
+
 ### HTML/JSX Structure Template
-```jsx
+```tsx
 <DeviceFrame>
   {/* FIXED TOP */}
   <SafeAreaTop />
@@ -133,9 +263,9 @@ Classify every element into one of three layers:
 ## Step 5: Modular Component Architecture
 
 ### Rules
-- Create one folder per component containing JSX, CSS, and index.js
+- Create one folder per component containing `.tsx`, `.css`, and `index.ts`
 - Organize components by role: ui, layout, feature-specific
-- Use barrel exports (index.js) for clean imports
+- Use barrel exports (`index.ts`) for clean imports
 - Extract constants to dedicated files
 - Extract utilities to dedicated files
 - Screens must only compose components, not define them inline
@@ -146,12 +276,12 @@ src/
 ├── components/
 │   ├── ui/                    # Atomic UI primitives
 │   │   ├── Badge/
-│   │   │   ├── Badge.jsx
+│   │   │   ├── Badge.tsx
 │   │   │   ├── Badge.css
-│   │   │   └── index.js
+│   │   │   └── index.ts
 │   │   ├── Toggle/
 │   │   ├── ProgressBar/
-│   │   └── index.js           # Barrel export
+│   │   └── index.ts           # Barrel export
 │   │
 │   ├── layout/                # Structural components
 │   │   ├── DeviceFrame/
@@ -159,25 +289,34 @@ src/
 │   │   ├── Header/
 │   │   ├── TabBar/
 │   │   ├── SafeArea/
-│   │   └── index.js
+│   │   └── index.ts
 │   │
 │   └── [feature]/             # Feature-specific components
 │       ├── FeatureComponent1/
 │       ├── FeatureComponent2/
-│       └── index.js
+│       └── index.ts
 │
 ├── screens/                   # Screen compositions
 │   └── ScreenName/
-│       ├── ScreenName.jsx
+│       ├── ScreenName.tsx
 │       ├── ScreenName.css
-│       └── index.js
+│       └── index.ts
+│
+├── hooks/                     # Custom hooks
+│   ├── use[DomainA].ts
+│   ├── use[DomainB].ts
+│   └── index.ts
+│
+├── types/                     # TypeScript types
+│   ├── [domain].ts
+│   └── index.ts
 │
 ├── constants/                 # Business constants
-│   └── [domain].js
+│   └── [domain].ts
 │
 ├── utils/                     # Utility functions
-│   ├── formatPrice.js
-│   └── index.js
+│   ├── [utility].ts
+│   └── index.ts
 │
 └── styles/                    # Global styles
     └── global.css
@@ -198,12 +337,12 @@ src/
 
 **Feature Components (`[feature]/`):**
 - Components with business context
-- Named by domain (cart/, profile/, catalog/)
-- Examples: CartItem, ProductCard, CheckoutButton
+- Named by domain
+- Examples: ItemCard, ListRow, ActionPanel
 
 ### Barrel Export Pattern
-```javascript
-// src/components/ui/index.js
+```typescript
+// src/components/ui/index.ts
 export { Badge } from './Badge';
 export { Toggle } from './Toggle';
 export { ProgressBar } from './ProgressBar';
@@ -212,9 +351,9 @@ export { ProgressBar } from './ProgressBar';
 ### Component Folder Structure
 ```
 ComponentName/
-├── ComponentName.jsx    # Component logic and markup
+├── ComponentName.tsx    # Component logic and markup
 ├── ComponentName.css    # Component-scoped styles
-└── index.js             # Re-export for clean imports
+└── index.ts             # Re-export for clean imports
 ```
 
 ### Examples
@@ -224,35 +363,35 @@ Good:
 src/components/
 ├── ui/
 │   ├── Badge/
-│   │   ├── Badge.jsx
+│   │   ├── Badge.tsx
 │   │   ├── Badge.css
-│   │   └── index.js
-│   └── index.js
+│   │   └── index.ts
+│   └── index.ts
 ├── layout/
 │   ├── Header/
-│   │   ├── Header.jsx
+│   │   ├── Header.tsx
 │   │   ├── Header.css
-│   │   └── index.js
-│   └── index.js
-└── cart/
-    ├── CartItem/
-    └── index.js
+│   │   └── index.ts
+│   └── index.ts
+└── [feature]/
+    ├── FeatureItem/
+    └── index.ts
 ```
 
-```jsx
+```tsx
 // Clean imports via barrel exports
 import { Badge, Toggle } from '../components/ui';
 import { Header, TabBar } from '../components/layout';
-import { CartItem } from '../components/cart';
+import { FeatureItem } from '../components/[feature]';
 ```
 
 Bad:
-```jsx
+```tsx
 // All components in single file - monolithic
-const CartScreen = () => {
+const ScreenComponent = () => {
   const Badge = () => <span>...</span>;
   const Header = () => <header>...</header>;
-  const CartItem = () => <div>...</div>;
+  const FeatureItem = () => <div>...</div>;
   // 500+ lines of inline components
 };
 ```
@@ -260,11 +399,11 @@ const CartScreen = () => {
 ```
 // Flat structure without organization
 src/components/
-├── Badge.jsx
-├── Header.jsx
-├── CartItem.jsx
-├── Toggle.jsx
-├── TabBar.jsx
+├── Badge.tsx
+├── Header.tsx
+├── FeatureItem.tsx
+├── Toggle.tsx
+├── TabBar.tsx
 └── ... 20 more files
 ```
 
@@ -302,8 +441,11 @@ Before considering a screen complete:
 
 - [ ] All images downloaded to `Assets/figma/`
 - [ ] All image paths reference local files
+- [ ] TypeScript types defined in `src/types/`
+- [ ] Components use `.tsx` extension
+- [ ] Hooks/utils/constants use `.ts` extension
 - [ ] Components organized by role (ui/layout/feature)
-- [ ] Each component has own folder with JSX, CSS, index.js
+- [ ] Each component has own folder with `.tsx`, `.css`, `index.ts`
 - [ ] Barrel exports configured for each category
 - [ ] Constants extracted to `src/constants/`
 - [ ] Utilities extracted to `src/utils/`
@@ -318,18 +460,18 @@ Before considering a screen complete:
 ### Asset Download
 
 Good:
-```javascript
+```typescript
 const imageData = await mcp.getAsset(nodeId);
-await fs.writeFile('Assets/figma/components/product-image-1.png', imageData);
+await fs.writeFile('Assets/figma/components/item-image-1.png', imageData);
 
 // Reference in code
-<img src="Assets/figma/components/product-image-1.png" alt="product" />
+<img src="Assets/figma/components/item-image-1.png" alt="item" />
 ```
 
 Bad:
-```javascript
-<img src="https://via.placeholder.com/80x80" alt="product" />
-<img src="http://localhost:3845/assets/temp-xyz" alt="product" />
+```typescript
+<img src="https://via.placeholder.com/80x80" alt="item" />
+<img src="http://localhost:3845/assets/temp-xyz" alt="item" />
 ```
 
 ### Structure Classification
@@ -350,6 +492,42 @@ Bad:
 {
   "components": ["Header", "Section1", "TabBar"]
 }
+```
+
+### TypeScript Component
+
+Good:
+```tsx
+// types defined first
+interface ItemProps {
+  id: string;
+  title: string;
+  value: number;
+  onSelect: (id: string) => void;
+}
+
+// component with explicit types
+export const Item: React.FC<ItemProps> = ({ id, title, value, onSelect }) => {
+  return (
+    <div onClick={() => onSelect(id)}>
+      <span>{title}</span>
+      <span>{value}</span>
+    </div>
+  );
+};
+```
+
+Bad:
+```jsx
+// no types, implicit any
+export const Item = ({ id, title, value, onSelect }) => {
+  return (
+    <div onClick={() => onSelect(id)}>
+      <span>{title}</span>
+      <span>{valeu}</span>  {/* typo not caught */}
+    </div>
+  );
+};
 ```
 
 ### Token Usage
@@ -378,6 +556,8 @@ Bad:
 - Never use placeholder URLs for assets
 - Never embed base64 assets in code
 - Never skip the normalization step
+- Never skip the type definition step
+- Never use `.jsx`/`.js` extensions (use `.tsx`/`.ts`)
 - Never put fixed elements inside scrollable content
 - Never define components inline within screens
 - Never create flat component structures without categorization
