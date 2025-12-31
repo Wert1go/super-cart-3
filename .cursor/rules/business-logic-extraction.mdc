@@ -1,0 +1,307 @@
+---
+alwaysApply: false
+---
+# Business Logic Extraction Rule
+
+## Scope
+This rule applies when converting Figma designs to React applications and extracting business logic into reusable hooks.
+
+## Purpose
+Ensure business logic is properly identified, extracted, and organized into custom hooks during the design-to-code conversion process. Separating business logic from UI components improves testability, reusability, and maintainability.
+
+---
+
+## Identifying Business Logic in Figma
+
+### Rules
+- Analyze component names for action verbs (Add, Remove, Update, Calculate, Toggle)
+- Look for numeric displays that depend on other values (totals, counts, percentages)
+- Identify conditional UI states (enabled/disabled, visible/hidden, active/inactive)
+- Find progress indicators that track toward thresholds
+- Note interactive elements that modify shared state
+
+### Business Logic Indicators in Component Names
+- `QuantityController` → state management + increment/decrement actions
+- `DeliverySummary` → calculation based on cart total
+- `DiscountSection` → conditional logic + toggle state
+- `CheckoutButton` → aggregated total + action trigger
+- `ProgressBar` → percentage calculation toward threshold
+
+---
+
+## Hook Classification
+
+### Rules
+- Create one hook per domain responsibility
+- Name hooks with `use` prefix followed by domain noun
+- Separate state hooks from calculation hooks
+- Compose hooks in screen components, not inside other hooks
+
+### Hook Categories
+
+**State Hooks** (manage mutable data):
+- `useCart` — items collection, add/remove/update operations
+- `useAuth` — user session, login/logout
+- `useForm` — form fields, validation state
+
+**Calculation Hooks** (derive values from inputs):
+- `useDelivery` — price calculation based on subtotal
+- `useDiscount` — eligibility and amount based on conditions
+- `useTotals` — aggregated sums and counts
+
+**Action Hooks** (coordinate complex operations):
+- `useCheckout` — combines data, triggers actions
+- `useShare` — formats data for sharing
+- `useSearch` — manages search state and results
+
+---
+
+## Hook Structure Pattern
+
+### Rules
+- Accept dependencies as parameters
+- Return object with state values and action functions
+- Use `useMemo` for derived calculations
+- Use `useCallback` for action functions
+- Export named function and default export
+
+### Template
+```javascript
+import { useState, useMemo, useCallback } from 'react';
+
+export const useDomainName = (dependencies) => {
+  // State
+  const [state, setState] = useState(initialValue);
+
+  // Derived values (calculations)
+  const derivedValue = useMemo(
+    () => /* calculation */,
+    [dependencies]
+  );
+
+  // Actions
+  const action = useCallback(() => {
+    /* mutation logic */
+  }, [dependencies]);
+
+  return {
+    // State
+    state,
+    derivedValue,
+    // Actions
+    action
+  };
+};
+
+export default useDomainName;
+```
+
+---
+
+## Extraction Process
+
+### Rules
+- Step 1: Identify all state variables in the screen component
+- Step 2: Group related state by domain (cart, delivery, discount)
+- Step 3: Identify calculations that depend on state
+- Step 4: Identify actions that modify state
+- Step 5: Create hook per domain with its state, calculations, and actions
+- Step 6: Replace inline logic in component with hook calls
+
+### Domain Grouping Example
+```
+Cart Domain:
+- State: items[]
+- Derived: totalCount, subtotal, itemIds
+- Actions: addItem, removeItem, updateQuantity, clearCart
+
+Delivery Domain:
+- Input: subtotal
+- Derived: price, isFree, freeDeliveryRemaining, progressPercent
+- Actions: none (pure calculations)
+
+Discount Domain:
+- State: enabled
+- Input: subtotal
+- Derived: canApply, amount
+- Actions: toggle, reset
+```
+
+---
+
+## File Organization
+
+### Rules
+- Store all hooks in `src/hooks/` directory
+- Create barrel export in `src/hooks/index.js`
+- One hook per file
+- Name file same as hook (without `use` prefix or with it)
+
+### Structure
+```
+src/hooks/
+├── useCart.js
+├── useDelivery.js
+├── useDiscount.js
+├── useCheckout.js
+└── index.js
+```
+
+---
+
+## Examples
+
+### Identifying Business Logic from Figma
+
+Good:
+```
+Component: "Delivery Summary"
+Contains: "До бесплатной доставки 1953₽", progress bar at 20%
+
+Extracted logic:
+- FREE_DELIVERY_THRESHOLD constant
+- freeDeliveryRemaining = threshold - subtotal
+- progressPercent = (subtotal / threshold) * 100
+- isFree = subtotal >= threshold
+
+→ Create useDelivery(subtotal) hook
+```
+
+Bad:
+```
+Component: "Delivery Summary"
+
+Approach: Hard-code "1953₽" as static text
+Result: No business logic extracted, UI not reactive
+```
+
+### Hook Implementation
+
+Good:
+```javascript
+// useDelivery.js
+export const useDelivery = (subtotal) => {
+  const price = useMemo(
+    () => subtotal >= THRESHOLD ? 0 : BASE_PRICE,
+    [subtotal]
+  );
+
+  const freeDeliveryRemaining = useMemo(
+    () => Math.max(0, THRESHOLD - subtotal),
+    [subtotal]
+  );
+
+  return { price, freeDeliveryRemaining, isFree: price === 0 };
+};
+
+// CartScreen.jsx
+const delivery = useDelivery(cart.subtotal);
+```
+
+Bad:
+```javascript
+// CartScreen.jsx - all logic inline
+const CartScreen = () => {
+  const deliveryPrice = subtotal >= 2551 ? 0 : 249;
+  const freeDeliveryRemaining = Math.max(0, 2551 - subtotal);
+  const isFree = deliveryPrice === 0;
+  // ... 50 more lines of inline calculations
+};
+```
+
+### Hook Composition
+
+Good:
+```javascript
+// Screen composes hooks
+const CartScreen = () => {
+  const cart = useCart(initialItems);
+  const delivery = useDelivery(cart.subtotal);
+  const discount = useDiscount(cart.subtotal);
+  const checkout = useCheckout({
+    subtotal: cart.subtotal,
+    deliveryPrice: delivery.price,
+    discountAmount: discount.amount
+  });
+
+  return <UI data={...} />;
+};
+```
+
+Bad:
+```javascript
+// Hook calls another hook internally
+const useCheckout = () => {
+  const cart = useCart();        // BAD: hook inside hook
+  const delivery = useDelivery(); // BAD: hidden dependency
+  // ...
+};
+```
+
+### Constants Extraction
+
+Good:
+```javascript
+// src/constants/cart.js
+export const FREE_DELIVERY_THRESHOLD = 2551;
+export const BASE_DELIVERY_PRICE = 249;
+export const DISCOUNT_MIN_ORDER = 2500;
+export const DISCOUNT_AMOUNT = 200;
+
+// useDelivery.js
+import { FREE_DELIVERY_THRESHOLD, BASE_DELIVERY_PRICE } from '../constants/cart';
+```
+
+Bad:
+```javascript
+// Magic numbers in hook
+const useDelivery = (subtotal) => {
+  const price = subtotal >= 2551 ? 0 : 249; // What are these numbers?
+};
+```
+
+---
+
+## UI Object Extension for Business Logic
+
+### Rules
+- Add `businessLogic` section to UI object files
+- Document identified calculations and thresholds
+- List required hooks for the screen
+- Mark unknown logic as TODO
+
+### Extended UI Object Format
+```json
+{
+  "name": "CartScreen",
+  "structure": {...},
+  "businessLogic": {
+    "hooks": ["useCart", "useDelivery", "useDiscount", "useCheckout"],
+    "constants": {
+      "FREE_DELIVERY_THRESHOLD": 2551,
+      "BASE_DELIVERY_PRICE": 249,
+      "DISCOUNT_MIN_ORDER": 2500,
+      "DISCOUNT_AMOUNT": 200
+    },
+    "calculations": [
+      "subtotal = sum of (item.price * item.quantity)",
+      "deliveryPrice = subtotal >= threshold ? 0 : basePrice",
+      "total = subtotal + deliveryPrice - discountAmount"
+    ],
+    "unknownLogic": [
+      "TODO: How is delivery time calculated?",
+      "TODO: What triggers promo code validation?"
+    ]
+  }
+}
+```
+
+---
+
+## Constraints
+- Never put all business logic in screen components
+- Never hard-code business constants in components or hooks
+- Never call hooks inside other hooks (compose at screen level)
+- Never skip the identification step before implementation
+- Never implement calculations without extracting constants first
+- Always document unknown business logic as TODO

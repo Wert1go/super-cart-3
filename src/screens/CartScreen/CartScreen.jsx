@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 
 // Layout Components
 import { DeviceFrame } from '../../components/layout/DeviceFrame';
@@ -14,14 +14,11 @@ import { CartList } from '../../components/cart/CartList';
 import { RecommendationsList } from '../../components/recommendations/RecommendationsList';
 import { CheckoutBlock } from '../../components/checkout/CheckoutBlock';
 
-// Utils & Constants
+// Hooks
+import { useCart, useDelivery, useDiscount, useCheckout } from '../../hooks';
+
+// Utils
 import { formatPrice } from '../../utils/formatPrice';
-import { 
-  FREE_DELIVERY_THRESHOLD, 
-  BASE_DELIVERY_PRICE, 
-  DISCOUNT_MIN_ORDER, 
-  DISCOUNT_AMOUNT 
-} from '../../constants/cart';
 
 import './CartScreen.css';
 
@@ -67,123 +64,54 @@ const TABS = [
 
 // ===== Main Cart Screen Component =====
 export const CartScreen = () => {
-  // ===== State =====
+  // ===== UI State =====
   const [selectedStore, setSelectedStore] = useState('big-store');
-  const [discountEnabled, setDiscountEnabled] = useState(false);
   const [activeTab, setActiveTab] = useState('cart');
-  const [cartItems, setCartItems] = useState(INITIAL_CART_ITEMS);
 
-  // ===== Computed Values (Business Logic) =====
-  const totalItemsCount = useMemo(() => 
-    cartItems.reduce((sum, item) => sum + item.quantity, 0),
-    [cartItems]
-  );
+  // ===== Business Logic Hooks =====
+  const cart = useCart(INITIAL_CART_ITEMS);
+  const delivery = useDelivery(cart.subtotal);
+  const discount = useDiscount(cart.subtotal);
+  const checkout = useCheckout({
+    subtotal: cart.subtotal,
+    deliveryPrice: delivery.price,
+    discountAmount: discount.amount,
+    items: cart.items,
+    totalCount: cart.totalCount
+  });
 
-  const subtotal = useMemo(() => 
-    cartItems.reduce((sum, item) => sum + (item.priceNum * item.quantity), 0),
-    [cartItems]
-  );
-
-  const deliveryPrice = useMemo(() => 
-    subtotal >= FREE_DELIVERY_THRESHOLD ? 0 : BASE_DELIVERY_PRICE,
-    [subtotal]
-  );
-
-  const canApplyDiscount = subtotal >= DISCOUNT_MIN_ORDER;
-  const appliedDiscount = (discountEnabled && canApplyDiscount) ? DISCOUNT_AMOUNT : 0;
-  const totalPrice = subtotal + deliveryPrice - appliedDiscount;
-  const freeDeliveryRemaining = Math.max(0, FREE_DELIVERY_THRESHOLD - subtotal);
-  const deliveryProgressPercent = (subtotal / FREE_DELIVERY_THRESHOLD) * 100;
-  const isFreeDelivery = deliveryPrice === 0;
-  
+  // ===== Derived Data =====
   const selectedStoreData = STORES.find(s => s.id === selectedStore);
   const deliveryTime = selectedStoreData?.deliveryTime || '60-90 мин';
-  const cartItemIds = cartItems.map(item => item.id);
 
   // ===== Handlers =====
-  const handleUpdateQuantity = (itemId, newQuantity) => {
-    if (newQuantity <= 0) {
-      setCartItems(items => items.filter(item => item.id !== itemId));
-    } else {
-      setCartItems(items =>
-        items.map(item =>
-          item.id === itemId ? { ...item, quantity: newQuantity } : item
-        )
-      );
-    }
-  };
-
-  const handleAddRecommended = (product) => {
-    const existingItem = cartItems.find(item => item.id === product.id);
-    
-    if (existingItem) {
-      handleUpdateQuantity(product.id, existingItem.quantity + 1);
-    } else {
-      setCartItems(items => [...items, {
-        id: product.id,
-        image: product.image,
-        name: product.name,
-        priceNum: product.priceNum,
-        weight: '100Г',
-        quantity: 1
-      }]);
-    }
-  };
-
   const handleClearCart = () => {
-    if (cartItems.length > 0 && window.confirm('Очистить корзину?')) {
-      setCartItems([]);
-      setDiscountEnabled(false);
-    }
-  };
-
-  const handleToggleDiscount = () => {
-    if (canApplyDiscount) {
-      setDiscountEnabled(prev => !prev);
-    }
-  };
-
-  const handleCheckout = () => {
-    if (cartItems.length === 0) return;
-    
-    alert(`Оформление заказа:\n\nТоваров: ${totalItemsCount}\nСумма: ${formatPrice(subtotal)}\nДоставка: ${isFreeDelivery ? 'бесплатно' : formatPrice(deliveryPrice)}\nСкидка: ${appliedDiscount > 0 ? `-${formatPrice(appliedDiscount)}` : 'нет'}\n\nИтого: ${formatPrice(totalPrice)}`);
-  };
-
-  const handleShare = () => {
-    const cartText = cartItems.map(item => 
-      `${item.name} × ${item.quantity} = ${formatPrice(item.priceNum * item.quantity)}`
-    ).join('\n');
-    
-    if (navigator.share) {
-      navigator.share({
-        title: 'Моя корзина',
-        text: `${cartText}\n\nИтого: ${formatPrice(totalPrice)}`
-      });
-    } else {
-      alert(`Корзина:\n${cartText}\n\nИтого: ${formatPrice(totalPrice)}`);
+    if (!cart.isEmpty && window.confirm('Очистить корзину?')) {
+      cart.clearCart();
+      discount.reset();
     }
   };
 
   // ===== Render Data =====
   const tabs = TABS.map(tab => ({
     ...tab,
-    badge: tab.id === 'cart' ? totalItemsCount : 0
+    badge: tab.id === 'cart' ? cart.totalCount : 0
   }));
 
-  const discount = {
-    text: `${DISCOUNT_AMOUNT}₽ при заказе от ${DISCOUNT_MIN_ORDER}₽`,
+  const discountData = {
+    text: `${discount.maxAmount}₽ при заказе от ${discount.minOrder}₽`,
     promoText: 'Другие промокоды',
     badge: '+6',
-    enabled: discountEnabled,
-    canApply: canApplyDiscount,
-    discountAmount: DISCOUNT_AMOUNT
+    enabled: discount.enabled,
+    canApply: discount.canApply,
+    discountAmount: discount.maxAmount
   };
 
-  const checkout = {
-    deliveryTime: deliveryTime,
+  const checkoutData = {
+    deliveryTime,
     label: 'К оплате',
-    total: formatPrice(totalPrice),
-    disabled: cartItems.length === 0
+    total: checkout.totalFormatted,
+    disabled: cart.isEmpty
   };
 
   // ===== Render =====
@@ -194,8 +122,8 @@ export const CartScreen = () => {
       <StatusBar />
       <Header 
         title="Корзина"
-        itemsCount={totalItemsCount}
-        onShare={handleShare}
+        itemsCount={cart.totalCount}
+        onShare={checkout.share}
         onSearch={() => alert('Поиск товаров')}
         onTrash={handleClearCart}
       />
@@ -210,32 +138,32 @@ export const CartScreen = () => {
         
         <DeliverySummary 
           deliveryTime={deliveryTime}
-          deliveryPrice={BASE_DELIVERY_PRICE}
-          freeDeliveryRemaining={freeDeliveryRemaining}
-          progressPercent={deliveryProgressPercent}
-          isFreeDelivery={isFreeDelivery}
+          deliveryPrice={delivery.basePrice}
+          freeDeliveryRemaining={delivery.freeDeliveryRemaining}
+          progressPercent={delivery.progressPercent}
+          isFreeDelivery={delivery.isFree}
         />
         
         <CartList 
-          items={cartItems}
-          onUpdateQuantity={handleUpdateQuantity}
+          items={cart.items}
+          onUpdateQuantity={cart.updateQuantity}
         />
         
         <RecommendationsList
           title="Порадовать себя"
           items={RECOMMENDATIONS}
-          onAddProduct={handleAddRecommended}
-          cartItemIds={cartItemIds}
+          onAddProduct={cart.addItem}
+          cartItemIds={cart.itemIds}
         />
       </div>
 
       {/* ===== FIXED BOTTOM ===== */}
       <div className="bottom-block">
         <CheckoutBlock
-          discount={discount}
-          checkout={checkout}
-          onToggleDiscount={handleToggleDiscount}
-          onCheckout={handleCheckout}
+          discount={discountData}
+          checkout={checkoutData}
+          onToggleDiscount={discount.toggle}
+          onCheckout={checkout.checkout}
         />
         
         <TabBar
@@ -251,4 +179,3 @@ export const CartScreen = () => {
 };
 
 export default CartScreen;
-
