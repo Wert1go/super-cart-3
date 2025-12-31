@@ -1,55 +1,30 @@
-# Dependencies
-node_modules/
-.pnp/
-.pnp.js
-
-# Build outputs
-dist/
-build/
-out/
-
-# Environment files
-.env
-.env.local
-.env.*.local
-
-# IDE (except Cursor rules)
-.idea/
-.vscode/
-*.swp
-*.swo
-*~
-
-# OS files
-.DS_Store
-.DS_Store?
-._*
-.Spotlight-V100
-.Trashes
-ehthumbs.db
-Thumbs.db
-
 # Logs
-logs/
+logs
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
 
-# Cache
-.cache/
-.parcel-cache/
-.npm/
+node_modules
+dist
+dist-ssr
+*.local
 
-# Testing
-coverage/
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
 
-# Temporary files
-tmp/
-temp/
-*.tmp
-
-# ===== IMPORTANT: These are INCLUDED in git =====
-# .cursor/rules/ - Cursor rules (NOT ignored)
-# Assets/ - All images and assets (NOT ignored)
-
+# Environment variables
+.env
+.env.local
+.env.production.local
+.env.development.local

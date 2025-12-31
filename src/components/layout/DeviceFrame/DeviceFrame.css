@@ -1,5 +1,8 @@
 .device-scale-wrapper {
   transform-origin: center center;
+  -webkit-transform-origin: center center;
+  /* Ensure wrapper doesn't affect layout */
+  display: inline-block;
 }
 
 .app-viewport {

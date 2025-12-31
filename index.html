@@ -31,53 +31,6 @@
       margin: 0;
       padding: 0;
     }
-
-    /* Device scaling */
-    .device-scale-wrapper {
-      transform-origin: center center;
-      -webkit-transform-origin: center center;
-    }
   </style>
-
-  <script>
-    // Dynamic device scaling to fit viewport
-    (function() {
-      const DEVICE_WIDTH = 428;
-      const DEVICE_HEIGHT = 926;
-      const PADDING = 60; // Small padding around device
-
-      function setDeviceScale() {
-        const wrapper = document.querySelector('.device-scale-wrapper');
-        if (!wrapper) return;
-
-        const availableHeight = window.innerHeight - PADDING;
-        const availableWidth = window.innerWidth - 40;
-
-        // Scale to fit both width and height constraints
-        const scaleHeight = availableHeight / DEVICE_HEIGHT;
-        const scaleWidth = availableWidth / DEVICE_WIDTH;
-        const scale = Math.min(scaleHeight, scaleWidth);
-
-        // Clamp between reasonable bounds
-        const clampedScale = Math.max(0.5, Math.min(scale, 1.5));
-
-        console.log('Viewport:', window.innerHeight, 'x', window.innerWidth, 'Scale:', clampedScale.toFixed(2));
-
-        // Use transform for better rendering
-        wrapper.style.transform = `scale(${clampedScale})`;
-        wrapper.style.webkitTransform = `scale(${clampedScale})`;
-      }
-
-      // Initial call
-      setDeviceScale();
-
-      // Update on resize with debounce
-      let resizeTimeout;
-      window.addEventListener('resize', function() {
-        clearTimeout(resizeTimeout);
-        resizeTimeout = setTimeout(setDeviceScale, 100);
-      });
-    })();
-  </script>
 </body>
 </html>

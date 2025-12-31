@@ -14,7 +14,7 @@
 
 .delivery-summary__main {
   font-size: var(--font-size-delivery-primary);
-  font-weight: var(--font-weight-medium);
+  font-weight: var(--font-weight-semibold);
   color: var(--color-text-primary);
 }
 

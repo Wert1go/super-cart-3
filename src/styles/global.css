@@ -10,6 +10,7 @@
 
 html, body, #root {
   height: 100%;
+  width: 100%;
   overflow: hidden;
 }
 
@@ -21,4 +22,10 @@ body {
   justify-content: center;
   align-items: center;
   -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
