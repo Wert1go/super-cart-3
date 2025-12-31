@@ -1,0 +1,201 @@
+---
+alwaysApply: false
+---
+# GitHub Pages Deployment Rule
+
+## Scope
+This rule applies to small web applications (React, Vue, vanilla JS) that need to be deployed to GitHub Pages.
+
+## Purpose
+Ensure proper configuration and deployment workflow for GitHub Pages, including static asset handling, base path configuration, and automated CI/CD.
+
+## Rules
+
+### Project Structure
+- Place all static assets (images, fonts, icons) in `public/` directory
+- Vite/Webpack will automatically copy `public/` contents to `dist/` during build
+- Never place static assets in `src/` or root directory (they won't be copied)
+- Use relative paths from public root: `Assets/figma/icons/icon.png` (not `/Assets/...`)
+
+### Vite Configuration
+- Set `base` path to match repository name: `base: '/repository-name/'`
+- Configure `publicDir: 'public'` explicitly
+- Enable `copyPublicDir: true` in build options
+- Example: `base: '/super-cart-3/'` for repo `super-cart-3`
+
+### GitHub Actions Workflow
+- Create `.github/workflows/deploy.yml` for automated deployment
+- Use `actions/configure-pages@v4` and `actions/deploy-pages@v4`
+- Build job must run before deploy job
+- Use `npm ci` or `npm install` (not yarn unless lockfile exists)
+- Upload build artifact from `dist/` directory
+
+### GitHub Pages Settings
+- Configure Pages source to "GitHub Actions" (not "Deploy from a branch")
+- Settings → Pages → Source: "GitHub Actions"
+- Workflow will deploy automatically on every push to main branch
+
+### Asset Paths in Code
+- Use paths relative to public root: `src="Assets/figma/icons/icon.png"`
+- Vite will resolve these correctly with base path
+- Never use absolute paths starting with `/` (breaks with base path)
+- Never use `../` to escape public directory
+
+## Process
+
+### Initial Setup
+1. Move static assets to `public/` directory
+2. Configure `vite.config.ts` with correct `base` path
+3. Create `.github/workflows/deploy.yml`
+4. Push changes to trigger first deployment
+5. Configure GitHub Pages to use "GitHub Actions" source
+
+### Deployment Workflow
+1. Push to `main` branch
+2. GitHub Actions automatically runs build job
+3. Build job creates `dist/` with all assets
+4. Deploy job uploads `dist/` to GitHub Pages
+5. Site available at `https://username.github.io/repository-name/`
+
+## Examples
+
+Good:
+```typescript
+// vite.config.ts
+export default defineConfig({
+  base: '/super-cart-3/',
+  publicDir: 'public',
+  build: {
+    outDir: 'dist',
+    copyPublicDir: true
+  }
+})
+```
+
+```tsx
+// Component using asset from public/
+<img src="Assets/figma/icons/share-icon.png" alt="share" />
+// Resolves to: /super-cart-3/Assets/figma/icons/share-icon.png
+```
+
+```yaml
+# .github/workflows/deploy.yml
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+      - run: npm ci
+      - run: npm run build
+      - uses: actions/configure-pages@v4
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: './dist'
+  
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+    steps:
+      - uses: actions/deploy-pages@v4
+```
+
+Bad:
+```typescript
+// vite.config.ts - Missing base path
+export default defineConfig({
+  // base not set - assets will 404 on GitHub Pages
+})
+```
+
+```tsx
+// Component - Absolute path breaks with base path
+<img src="/Assets/figma/icons/share-icon.png" />
+// Will try: https://username.github.io/Assets/... (404)
+```
+
+```typescript
+// Assets in wrong location
+// src/assets/images/icon.png - Won't be copied to dist/
+// Should be: public/Assets/figma/icons/icon.png
+```
+
+```yaml
+# Wrong workflow - using branch deployment
+# Don't use "Deploy from a branch" in GitHub Pages settings
+# Use GitHub Actions workflow instead
+```
+
+## File Structure
+
+Good:
+```
+project/
+├── public/
+│   └── Assets/
+│       └── figma/
+│           ├── icons/
+│           └── components/
+├── src/
+│   └── components/
+├── .github/
+│   └── workflows/
+│       └── deploy.yml
+├── vite.config.ts
+└── package.json
+```
+
+Bad:
+```
+project/
+├── Assets/          # Wrong - not in public/
+│   └── figma/
+├── src/
+│   └── assets/      # Wrong - won't be copied
+└── dist/            # Wrong - should be gitignored
+```
+
+## Troubleshooting
+
+### Images return 404
+- Check that assets are in `public/` directory
+- Verify `publicDir: 'public'` in vite.config.ts
+- Check that paths don't start with `/`
+- Verify `base` path matches repository name
+
+### Workflow doesn't run
+- Check GitHub Pages settings: Source must be "GitHub Actions"
+- Verify `.github/workflows/deploy.yml` exists in repository
+- Check Actions tab for workflow errors
+- Try manual trigger: Actions → "Run workflow"
+
+### Build fails
+- Check Node.js version in workflow matches local
+- Verify `package.json` scripts are correct
+- Check for TypeScript errors: `npm run build` locally
+- Review workflow logs in Actions tab
+
+### Base path issues
+- Verify `base` in vite.config.ts matches repository name exactly
+- Check that all asset paths are relative (not absolute)
+- Test locally with `npm run preview` after build
+
+## Constraints
+- Never commit `dist/` directory (add to .gitignore)
+- Never use absolute paths for assets (breaks with base path)
+- Never place static assets outside `public/` directory
+- Always configure GitHub Pages to use "GitHub Actions" source
+- Never skip base path configuration in vite.config.ts
