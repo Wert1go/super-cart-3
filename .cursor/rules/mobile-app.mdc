@@ -42,12 +42,24 @@ Every iOS replica MUST follow this structure:
 ## Dynamic Device Scaling
 
 ### Rules
-- Use JavaScript to calculate scale dynamically based on viewport height
+- Use JavaScript to calculate scale dynamically based on viewport dimensions
 - Use `transform: scale()` with `transform-origin: center center` for proper centering
-- Calculate scale using formula: `scale = (viewportHeight - padding) / deviceHeight`
+- Calculate scale considering BOTH width AND height constraints: `scale = Math.min(scaleHeight, scaleWidth)`
+- Calculate scaleHeight: `(viewportHeight - paddingVertical) / deviceHeight`
+- Calculate scaleWidth: `(viewportWidth - paddingHorizontal) / deviceWidth`
 - Clamp scale between reasonable bounds (0.5 to 1.5)
 - Update scale on window resize with debounce
 - Set `overflow: hidden` on body to prevent page scroll
+
+### Scaling in React Applications
+
+When using React framework:
+- Implement scaling logic ONLY in React component (e.g., `DeviceFrame.tsx`)
+- NEVER duplicate scaling logic in `index.html` scripts
+- Use `useEffect` hook for viewport resize handling
+- Use `useState` to store calculated scale value
+- Ensure `#root` also has flex centering styles for proper layout
+- Remove any scaling scripts from `index.html` when migrating to React
 
 ### Device Dimensions
 - iPhone 14 Pro Max: 428 x 926 px
@@ -58,18 +70,54 @@ Every iOS replica MUST follow this structure:
 
 Good:
 ```javascript
+// Static HTML approach
 const DEVICE_HEIGHT = 926;
-const PADDING = 60;
+const DEVICE_WIDTH = 428;
+const PADDING_VERTICAL = 60;
+const PADDING_HORIZONTAL = 40;
 
 function setDeviceScale() {
   const wrapper = document.querySelector('.device-scale-wrapper');
-  const availableHeight = window.innerHeight - PADDING;
-  const scale = Math.max(0.5, Math.min(availableHeight / DEVICE_HEIGHT, 1.5));
+  const availableHeight = window.innerHeight - PADDING_VERTICAL;
+  const availableWidth = window.innerWidth - PADDING_HORIZONTAL;
+  const scaleHeight = availableHeight / DEVICE_HEIGHT;
+  const scaleWidth = availableWidth / DEVICE_WIDTH;
+  const scale = Math.max(0.5, Math.min(Math.min(scaleHeight, scaleWidth), 1.5));
   wrapper.style.transform = `scale(${scale})`;
 }
 
 window.addEventListener('resize', setDeviceScale);
 setDeviceScale();
+```
+
+```tsx
+// React component approach
+const DeviceFrame: React.FC = ({ children }) => {
+  const [scale, setScale] = useState(1);
+
+  useEffect(() => {
+    const calculateScale = () => {
+      const availableHeight = window.innerHeight - PADDING_VERTICAL;
+      const availableWidth = window.innerWidth - PADDING_HORIZONTAL;
+      const scaleHeight = availableHeight / DEVICE_HEIGHT;
+      const scaleWidth = availableWidth / DEVICE_WIDTH;
+      const optimalScale = Math.min(scaleHeight, scaleWidth);
+      const clampedScale = Math.max(0.5, Math.min(optimalScale, 1.5));
+      setScale(clampedScale);
+    };
+
+    calculateScale();
+    const handleResize = debounce(calculateScale, 100);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  return (
+    <div className="device-scale-wrapper" style={{ transform: `scale(${scale})` }}>
+      {children}
+    </div>
+  );
+};
 ```
 
 ```css
@@ -101,6 +149,20 @@ body {
   align-items: flex-start; /* Device sticks to top instead of centering */
   padding-top: 20px;
 }
+```
+
+```html
+<!-- index.html - Duplicate scaling logic conflicts with React component -->
+<script>
+  // BAD: Scaling script in HTML when React component also handles scaling
+  document.querySelector('.device-scale-wrapper').style.transform = `scale(${scale})`;
+</script>
+```
+
+```tsx
+// BAD: Only considering height, ignoring width constraint
+const scale = (window.innerHeight - 60) / DEVICE_HEIGHT;
+// Device may overflow horizontally on narrow viewports
 ```
 
 ---

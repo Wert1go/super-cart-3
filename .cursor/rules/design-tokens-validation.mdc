@@ -1,0 +1,85 @@
+---
+alwaysApply: false
+---
+# Design Tokens Validation Rule
+
+## Scope
+This rule applies when generating or updating design tokens from Figma designs, especially when device dimensions differ from the original design.
+
+## Purpose
+Ensure design tokens accurately reflect the original design specifications and are correctly scaled for the target device dimensions.
+
+## Rules
+
+### Scale Factor Application
+- Always check `device.scaleFactor`, `device.originalWidth`, and `device.targetWidth` in `tokens.json`
+- If scaleFactor exists and != 1.0, apply it to ALL dimension tokens (typography, spacing, radii)
+- Calculate scale factor: `scaleFactor = targetWidth / originalWidth`
+- Apply scale factor to each token value: `finalValue = originalValue * scaleFactor`
+- Round final values to whole pixels for readability
+- Document calculation in comments: `/* 24px * 0.725 = 17.4px → 17px */`
+
+### Font Weight Validation
+- Extract font-weight values directly from Figma component styles
+- Match token values exactly (400, 500, 600, 700)
+- Never assume weight based on font size or visual appearance
+- Cross-reference with original design screenshots or working reference implementation
+- Verify each component-specific token uses the correct weight
+
+### Token Verification Checklist
+Before finalizing `tokens.css`:
+- [ ] All typography sizes scaled correctly if device dimensions differ
+- [ ] Font weights match Figma specifications exactly (not assumed)
+- [ ] Spacing values scaled if scale factor != 1.0
+- [ ] Border radii scaled if scale factor != 1.0
+- [ ] Colors match exactly (no approximations or "close enough" values)
+- [ ] Component-specific tokens use correct values from Figma
+- [ ] Scale factor calculation documented in comments
+- [ ] All dimension tokens consistently scaled (no mix of scaled and unscaled values)
+
+### Process
+1. Extract raw values from Figma → `tokens.json`
+2. Check device dimensions in `tokens.json`
+3. Calculate scale factor if dimensions differ
+4. Apply scale factor to all dimension tokens when generating `tokens.css`
+5. Verify font weights against Figma component styles
+6. Cross-check with working reference if available
+7. Document calculations in comments
+
+## Examples
+
+Good:
+```css
+/* Applied scale factor 0.725 (428/590) to match target device dimensions */
+--font-size-status-time: 17px; /* 24 * 0.725 = 17.4 */
+--font-size-header-title: 17px; /* 23 * 0.725 = 16.675 */
+--font-weight-header-title: 500; /* Verified from Figma component style */
+--font-size-delivery-primary: 21px; /* 29 * 0.725 = 21.025 */
+--font-weight-delivery-primary: 600; /* Verified from Figma, not assumed */
+```
+
+Bad:
+```css
+/* Using raw Figma values without scaling */
+--font-size-status-time: 24px; /* Wrong - too large for 428px device */
+--font-size-header-title: 23px; /* Wrong - should be 17px */
+
+/* Assuming font weight instead of verifying */
+--font-weight-header-title: 400; /* Assumed, not verified from Figma */
+--font-weight-delivery-primary: 500; /* Wrong - should be 600 per Figma */
+```
+
+```css
+/* Inconsistent scaling - some scaled, some not */
+--font-size-status-time: 17px; /* Scaled correctly */
+--font-size-header-title: 23px; /* Not scaled - inconsistent */
+--spacing-md: 12px; /* Scaled */
+--radius-md: 16px; /* Not scaled - inconsistent */
+```
+
+## Constraints
+- Never skip scale factor application when device dimensions differ
+- Never assume font weights - always verify from Figma
+- Never mix scaled and unscaled dimension tokens
+- Never use "close enough" values for colors or dimensions
+- Never finalize tokens without verification checklist

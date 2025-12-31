@@ -276,6 +276,25 @@ Translate design values extracted from Figma into reusable tokens and enforce th
 - Allow a small set of raw/base tokens only when necessary (e.g., `--space-4`, `--radius-12`) and build semantic tokens on top
 - Never hardcode hex colors, pixel spacing, radii, font sizes/weights in component CSS when a token exists
 
+### Design Token Scale Factor (CRITICAL)
+
+When extracting tokens from Figma, ALWAYS apply device scale factor if design dimensions differ from target device:
+
+- Extract `device.originalWidth` and `device.targetWidth` from Figma metadata
+- Calculate scale factor: `scaleFactor = targetWidth / originalWidth`
+- Apply scale factor to ALL typography sizes when generating `tokens.css`
+- Apply scale factor to spacing, radii, and other dimension tokens
+- Document scale factor calculation in comments: `/* 24px * 0.725 = 17.4px → 17px */`
+- Round final values to whole pixels for readability
+- Verify font-weight values match Figma specifications exactly (do not assume)
+
+Example:
+- Figma design: 590px width → tokens show 24px font size
+- Target device: 428px width → scale factor = 428/590 = 0.725
+- Final token: `--font-size-status-time: 17px; /* 24 * 0.725 = 17.4 */`
+
+Never use raw Figma values without scaling when device dimensions differ.
+
 ### Output Files
 ```
 src/
@@ -491,6 +510,9 @@ Before considering a screen complete:
 - [ ] Design tokens exported to `src/design/tokens.json`
 - [ ] `src/styles/tokens.css` exists and is globally imported once
 - [ ] Component CSS uses `var(--token)` instead of hardcoded values (where tokens exist)
+- [ ] Design tokens scaled correctly if device dimensions differ from Figma (scale factor applied)
+- [ ] Font weights verified against Figma component styles (not assumed)
+- [ ] All dimension tokens (typography, spacing, radii) use scale factor if applicable
 - [ ] Touch targets minimum 44x44px
 
 ---
