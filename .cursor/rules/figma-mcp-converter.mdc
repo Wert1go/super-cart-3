@@ -260,6 +260,69 @@ src/
 
 ---
 
+## Step 4.5: Apply Design Tokens (Design System)
+
+### Purpose
+Translate design values extracted from Figma into reusable tokens and enforce their use across all component styles.
+
+### Rules
+- Export design tokens from normalization as a stable source file (JSON) in `src/design/tokens.json`
+- Generate a single CSS custom properties file in `src/styles/tokens.css`
+- Import tokens once globally (e.g., in `src/styles/global.css`) and never re-declare tokens inside component CSS
+- Use `var(--token-name)` in component CSS for colors, spacing, radii, typography, shadows, and motion
+- Prefer **semantic tokens** over raw values (e.g., `--color-surface` instead of `--color-white`)
+- Keep token names **project-agnostic** and **domain-agnostic** (never encode screen names, product names, or feature names)
+- Keep tokens **component-agnostic** (avoid `--header-title-color`; prefer `--color-text-primary`, `--font-size-lg`)
+- Allow a small set of raw/base tokens only when necessary (e.g., `--space-4`, `--radius-12`) and build semantic tokens on top
+- Never hardcode hex colors, pixel spacing, radii, font sizes/weights in component CSS when a token exists
+
+### Output Files
+```
+src/
+├── design/
+│   └── tokens.json         # Source of truth for extracted design values
+└── styles/
+    ├── tokens.css          # :root { --tokens... }
+    └── global.css          # imports tokens.css
+```
+
+### Token Naming (Recommended)
+- Colors: `--color-bg`, `--color-surface`, `--color-border`, `--color-separator`, `--color-text-primary`, `--color-text-secondary`, `--color-accent`
+- Spacing: `--space-xs`, `--space-sm`, `--space-md`, `--space-lg`, `--space-xl`
+- Radii: `--radius-sm`, `--radius-md`, `--radius-lg`
+- Typography: `--font-family`, `--font-size-sm|md|lg`, `--font-weight-regular|medium|semibold|bold`
+- Shadows: `--shadow-sm|md|lg`
+- Motion: `--transition-fast|normal|slow`
+
+### Examples
+
+Good:
+```css
+/* src/styles/global.css */
+@import './tokens.css';
+
+.card {
+  background: var(--color-surface);
+  color: var(--color-text-primary);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  box-shadow: var(--shadow-md);
+}
+```
+
+Bad:
+```css
+/* Tokens re-declared in component CSS, plus hardcoded values */
+.card {
+  --color-surface: #ffffff;
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 20px;
+}
+```
+
+---
+
 ## Step 5: Modular Component Architecture
 
 ### Rules
@@ -409,32 +472,6 @@ src/components/
 
 ---
 
-## Design Tokens
-
-### Token File Location
-`src/design/tokens.json`
-
-### Required Token Categories
-```json
-{
-  "colors": {
-    "background": "#f8f8f8",
-    "surface": "#ffffff",
-    "separator": "#e5e5ea",
-    "textPrimary": "#000000",
-    "textSecondary": "#8e8e93"
-  },
-  "typography": {
-    "headingLarge": { "size": 28, "weight": 700 },
-    "body": { "size": 17, "weight": 400 }
-  },
-  "spacing": { "xs": 4, "sm": 8, "md": 16, "lg": 20 },
-  "radii": { "sm": 8, "md": 12, "lg": 16 }
-}
-```
-
----
-
 ## Quality Checklist
 
 Before considering a screen complete:
@@ -451,6 +488,9 @@ Before considering a screen complete:
 - [ ] Utilities extracted to `src/utils/`
 - [ ] Screen only composes components
 - [ ] Three-layer architecture implemented
+- [ ] Design tokens exported to `src/design/tokens.json`
+- [ ] `src/styles/tokens.css` exists and is globally imported once
+- [ ] Component CSS uses `var(--token)` instead of hardcoded values (where tokens exist)
 - [ ] Touch targets minimum 44x44px
 
 ---
@@ -537,7 +577,7 @@ Good:
 .card {
   background: var(--color-surface);
   border-radius: var(--radius-lg);
-  padding: var(--spacing-lg);
+  padding: var(--space-lg);
 }
 ```
 
