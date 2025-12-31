@@ -1,0 +1,40 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  border-radius: 9px;
+}
+
+.badge--default {
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  font-size: 11px;
+  background: #ff6b47;
+  color: white;
+}
+
+.badge--small {
+  min-width: 18px;
+  height: 18px;
+  padding: 0 4px;
+  font-size: 11px;
+  background: #eeedec;
+  color: #656665;
+  border-radius: 6px;
+}
+
+.badge--discount {
+  background: #eeedec;
+  color: #656665;
+  border-radius: 6px;
+  padding: 2px 4px;
+  font-size: 11px;
+}
+
+.badge--success {
+  background: #34c759;
+  color: white;
+}
+

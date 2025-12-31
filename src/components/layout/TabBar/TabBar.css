@@ -1,0 +1,38 @@
+.tabbar {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 8px 0 4px;
+  background: #ffffff;
+}
+
+.tabbar__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 24px;
+  cursor: pointer;
+  position: relative;
+  opacity: 0.5;
+  transition: opacity 0.2s;
+}
+
+.tabbar__item:hover {
+  opacity: 0.8;
+}
+
+.tabbar__item--active {
+  opacity: 1;
+}
+
+.tabbar__icon {
+  width: 24px;
+  height: 24px;
+}
+
+.tabbar__badge {
+  position: absolute;
+  top: 4px;
+  right: 16px;
+}
+

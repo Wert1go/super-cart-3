@@ -1,0 +1,32 @@
+.store-button {
+  flex: 1;
+  padding: 14px 16px;
+  background: #ffffff;
+  border: 1px solid #e6e6e6;
+  border-radius: 16px;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.2s;
+}
+
+.store-button:hover {
+  border-color: #ccc;
+}
+
+.store-button--active {
+  border-color: #434343;
+  background: #fff;
+}
+
+.store-button__name {
+  font-size: 14px;
+  font-weight: 600;
+  color: #4a4a4a;
+  margin-bottom: 4px;
+}
+
+.store-button__time {
+  font-size: 12px;
+  color: #8e8e93;
+}
+

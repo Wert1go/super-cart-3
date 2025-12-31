@@ -1,0 +1,53 @@
+.delivery-summary {
+  background: #ffffff;
+  margin: 0 16px 12px;
+  border-radius: 16px;
+  padding: 16px;
+}
+
+.delivery-summary__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 4px;
+}
+
+.delivery-summary__main {
+  font-size: 17px;
+  font-weight: 500;
+  color: #393939;
+}
+
+.delivery-summary__info-btn {
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  opacity: 0.6;
+}
+
+.delivery-summary__subtitle {
+  font-size: 13px;
+  color: #71c28f;
+  margin-bottom: 12px;
+}
+
+.delivery-summary__progress-labels {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 8px;
+}
+
+.delivery-summary__progress-label {
+  font-size: 13px;
+  color: #71c28f;
+}
+
+.delivery-summary__progress-label--success {
+  color: #34c759;
+  font-weight: 600;
+}
+
+.delivery-summary__progress-label--end {
+  color: #b3b3b3;
+}
+

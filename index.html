@@ -49,6 +49,11 @@
       box-sizing: border-box;
     }
 
+    html, body {
+      height: 100%;
+      overflow: hidden;
+    }
+
     body {
       font-family: var(--font-family);
       background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
@@ -56,37 +61,14 @@
       display: flex;
       justify-content: center;
       align-items: center;
-      padding: 20px;
       -webkit-font-smoothing: antialiased;
     }
 
     /* ===== Device Scale Wrapper ===== */
     .device-scale-wrapper {
-      zoom: 0.85;
-      -moz-transform: scale(0.85);
-      -moz-transform-origin: top center;
-    }
-
-    /* Fit to viewport height */
-    @media (max-height: 900px) {
-      .device-scale-wrapper {
-        zoom: 0.7;
-        -moz-transform: scale(0.7);
-      }
-    }
-
-    @media (max-height: 750px) {
-      .device-scale-wrapper {
-        zoom: 0.6;
-        -moz-transform: scale(0.6);
-      }
-    }
-
-    @media (min-height: 1100px) {
-      .device-scale-wrapper {
-        zoom: 1.0;
-        -moz-transform: scale(1.0);
-      }
+      /* Scale is set dynamically via JavaScript */
+      transform-origin: center center;
+      -moz-transform-origin: center center;
     }
 
     /* ===== App Viewport (Device Frame) ===== */
@@ -1210,6 +1192,49 @@
       color: #999;
     }
   </style>
+
+  <script>
+    // Dynamic device scaling to fit viewport
+    (function() {
+      const DEVICE_WIDTH = 428;
+      const DEVICE_HEIGHT = 926;
+      const PADDING = 60; // Small padding around device
+      
+      function setDeviceScale() {
+        const wrapper = document.querySelector('.device-scale-wrapper');
+        if (!wrapper) return;
+        
+        const availableHeight = window.innerHeight - PADDING;
+        
+        // Scale to fill available height (primary constraint for mobile device)
+        const scale = availableHeight / DEVICE_HEIGHT;
+        
+        // Clamp between reasonable bounds
+        const clampedScale = Math.max(0.5, Math.min(scale, 1.5));
+        
+        console.log('Viewport:', window.innerHeight, 'Scale:', clampedScale.toFixed(2));
+        
+        // Use transform for better rendering
+        wrapper.style.transform = `scale(${clampedScale})`;
+        wrapper.style.webkitTransform = `scale(${clampedScale})`;
+      }
+      
+      // Initial call
+      setDeviceScale();
+      
+      // Update on resize with debounce
+      let resizeTimeout;
+      window.addEventListener('resize', function() {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(setDeviceScale, 100);
+      });
+      
+      // Also call after DOM is fully loaded
+      if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', setDeviceScale);
+      }
+    })();
+  </script>
 </body>
 </html>
 

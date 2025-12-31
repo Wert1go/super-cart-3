@@ -1,0 +1,41 @@
+.toggle {
+  width: 51px;
+  height: 31px;
+  cursor: pointer;
+  padding: 2px;
+}
+
+.toggle__track {
+  width: 100%;
+  height: 100%;
+  background: #e9e9eb;
+  border-radius: 16px;
+  position: relative;
+  transition: background 0.3s;
+}
+
+.toggle--active .toggle__track {
+  background: #34c759;
+}
+
+.toggle__thumb {
+  width: 27px;
+  height: 27px;
+  background: white;
+  border-radius: 50%;
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  transition: transform 0.3s;
+}
+
+.toggle--active .toggle__thumb {
+  transform: translateX(20px);
+}
+
+.toggle--disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+

@@ -1,0 +1,38 @@
+.header {
+  height: 53px;
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  background: #f4f4f4;
+  flex-shrink: 0;
+}
+
+.header__title {
+  font-size: 17px;
+  font-weight: 500;
+  color: #505050;
+  margin: 0;
+}
+
+.header__actions {
+  position: absolute;
+  right: 20px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.header__action {
+  width: 24px;
+  height: 24px;
+  cursor: pointer;
+  opacity: 0.7;
+  transition: opacity 0.2s;
+}
+
+.header__action:hover {
+  opacity: 1;
+}
+

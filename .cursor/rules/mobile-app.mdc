@@ -1,40 +1,13 @@
-# Cursor Rule: Mobile App Modeling and Web-Based iOS Replica Layout
+---
+alwaysApply: true
+---
+# Mobile App Replica Rule
 
 ## Scope
-This rule applies to all files where a mobile application UI is implemented or simulated in the web environment, with the goal of replicating an iOS mobile app layout and behavior.
+This rule applies to all web-based iOS mobile app replicas and prototypes.
 
 ## Purpose
-Ensure that mobile applications are modeled and implemented as constrained iOS-style apps, not as responsive websites.
-The resulting web implementation must behave as a visual and structural replica of a real iOS application.
-
-## Core Principles
-- A mobile app is a **bounded viewport**, not a fluid web canvas
-- Web rendering is used as a **simulation medium**, not as a design target
-- Layout decisions must follow **mobile app mental models**, not web page conventions
-
----
-
-## Device Frame & Scaling
-
-### Fixed Viewport Dimensions
-- Always use concrete device dimensions (e.g., iPhone 14: 428×926px)
-- The viewport MUST have fixed width and height
-- Apply realistic device frame styling:
-  - `border-radius: 55px` for modern iPhones
-  - `box-shadow` for depth and device bezel simulation
-
-### Scaling for Desktop Viewing
-- When the device needs to appear larger for desktop viewing, use a **single scale factor at the root level**
-- **Use `zoom` property, NOT `transform: scale()`**
-  - `zoom` affects layout flow correctly
-  - `transform: scale()` does NOT affect layout flow and causes clipping/positioning issues
-- Apply scaling to a wrapper element around the device frame
-- Recommended scale factor: 1.5–2.0 depending on target screen
-
-### Centering & Positioning
-- Center the device horizontally using flexbox on body
-- Allow body to scroll vertically if scaled device exceeds viewport height
-- Use `align-items: flex-start` to anchor device to top
+Ensure consistent, pixel-perfect iOS replica implementation with correct layout structure, visual language, and device scaling behavior.
 
 ---
 
@@ -62,7 +35,73 @@ Every iOS replica MUST follow this structure:
 - The `content-area` is the ONLY scrollable container
 - Use `-webkit-overflow-scrolling: touch` for native feel
 - Hide scrollbar visually: `scrollbar-width: none`
-- Browser page itself should NOT be the primary scroll container
+- Browser page itself must NOT be the primary scroll container
+
+---
+
+## Dynamic Device Scaling
+
+### Rules
+- Use JavaScript to calculate scale dynamically based on viewport height
+- Use `transform: scale()` with `transform-origin: center center` for proper centering
+- Calculate scale using formula: `scale = (viewportHeight - padding) / deviceHeight`
+- Clamp scale between reasonable bounds (0.5 to 1.5)
+- Update scale on window resize with debounce
+- Set `overflow: hidden` on body to prevent page scroll
+
+### Device Dimensions
+- iPhone 14 Pro Max: 428 x 926 px
+- iPhone 14 Pro: 393 x 852 px
+- iPhone 14: 390 x 844 px
+
+### Examples
+
+Good:
+```javascript
+const DEVICE_HEIGHT = 926;
+const PADDING = 60;
+
+function setDeviceScale() {
+  const wrapper = document.querySelector('.device-scale-wrapper');
+  const availableHeight = window.innerHeight - PADDING;
+  const scale = Math.max(0.5, Math.min(availableHeight / DEVICE_HEIGHT, 1.5));
+  wrapper.style.transform = `scale(${scale})`;
+}
+
+window.addEventListener('resize', setDeviceScale);
+setDeviceScale();
+```
+
+```css
+html, body {
+  height: 100%;
+  overflow: hidden;
+}
+
+body {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.device-scale-wrapper {
+  transform-origin: center center;
+}
+```
+
+Bad:
+```css
+.device-scale-wrapper {
+  zoom: 1.8; /* Static value - does not adapt to viewport */
+}
+```
+
+```css
+body {
+  align-items: flex-start; /* Device sticks to top instead of centering */
+  padding-top: 20px;
+}
+```
 
 ---
 
@@ -76,19 +115,19 @@ Every iOS replica MUST follow this structure:
 - Primary accent: context-dependent (e.g., `#34c759` for success)
 
 ### Typography Hierarchy
-- **Primary** (headings, key info): 22–28px, font-weight: 700
-- **Secondary** (content, names): 16–17px, font-weight: 500–600
-- **Tertiary** (metadata, hints): 13–15px, font-weight: 400, color: #8e8e93
+- **Primary** (headings, key info): 22-28px, font-weight: 700
+- **Secondary** (content, names): 16-17px, font-weight: 500-600
+- **Tertiary** (metadata, hints): 13-15px, font-weight: 400, color: #8e8e93
 - Use negative letter-spacing for headings: `letter-spacing: -0.4px`
 
-### Spacing & Sections
+### Spacing and Sections
 - Section cards: `border-radius: 16px`, `margin: 0 20px 12px`
-- Internal padding: `16–20px`
+- Internal padding: `16-20px`
 - Clear visual separation between sections using background color contrast
 
 ### Touch Targets
-- Minimum touch target: 44×44px
-- Buttons should have padding for comfortable tapping
+- Minimum touch target: 44x44px
+- Buttons must have padding for comfortable tapping
 - Use `:active` states for touch feedback
 
 ---
@@ -103,15 +142,15 @@ Every iOS replica MUST follow this structure:
 
 ### Primary CTA Button
 - Full width minus margins
-- Height: 50–56px
+- Height: 50-56px
 - Prominent background (gradient or solid accent color)
 - Box-shadow for elevation
 - Positioned in fixed bottom layer, NOT inside scrollable content
 
 ### Tab Bar
 - Height: ~83px (including padding)
-- 3–5 items, evenly distributed
-- Icons: 26–28px
+- 3-5 items, evenly distributed
+- Icons: 26-28px
 - Badge: red circle with white text
 - Border-top separator
 
@@ -134,36 +173,7 @@ Every iOS replica MUST follow this structure:
 
 ---
 
-## Mandatory Layout Constraints
-- Never stretch to full browser width or height
-- Horizontal scrolling is NOT allowed unless explicitly designed
-- Content must never visually collide with system areas
-- Do not introduce responsive breakpoints
-- Do not optimize for large screens
-
----
-
-## Examples (MANDATORY)
-
-### Device Scaling
-
-Good:
-```css
-.device-scale-wrapper {
-  zoom: 1.8;
-  -moz-transform: scale(1.8);
-  -moz-transform-origin: top center;
-}
-```
-
-Bad:
-```css
-.device-scale-wrapper {
-  transform: scale(1.8);
-  transform-origin: top center;
-}
-/* This breaks layout flow and causes clipping */
-```
+## Examples
 
 ### Layout Structure
 
@@ -177,14 +187,13 @@ Good:
   
   {/* Scrollable Content */}
   <div className="content-area">
-    <StoreSelector />
-    <DeliverySummary />
-    <CartItems />
-    <Recommendations />
+    <Section1 />
+    <Section2 />
+    <Section3 />
   </div>
   
   {/* Fixed Bottom */}
-  <CheckoutBlock />
+  <PrimaryCTA />
   <TabBar />
   <SafeAreaBottom />
 </div>
@@ -195,39 +204,18 @@ Bad:
 <div className="app-viewport">
   <div className="content-area">
     <Header />           {/* Header inside scroll - WRONG */}
-    <CartItems />
-    <CheckoutBlock />    {/* CTA inside scroll - WRONG */}
+    <Section1 />
+    <PrimaryCTA />       {/* CTA inside scroll - WRONG */}
     <TabBar />           {/* Tab bar inside scroll - WRONG */}
   </div>
 </div>
-```
-
-### Body Centering
-
-Good:
-```css
-body {
-  display: flex;
-  justify-content: center;
-  align-items: flex-start;
-  min-height: 100%;
-  padding: 40px 20px;
-}
-```
-
-Bad:
-```css
-body {
-  overflow: hidden;      /* Prevents scrolling to see full device */
-  align-items: center;   /* Cuts off top of device */
-}
 ```
 
 ### Typography
 
 Good:
 ```css
-.delivery-time-price {
+.heading {
   font-size: 28px;
   font-weight: 700;
   color: #000000;
@@ -242,7 +230,7 @@ Good:
 
 Bad:
 ```css
-.delivery-time-price {
+.heading {
   font-size: 28px;
   font-weight: 400;      /* Too light for primary info */
   color: #666666;        /* Not enough contrast */
@@ -252,8 +240,8 @@ Bad:
 ---
 
 ## Constraints
-- Do not redesign UI to "fit the web better"
-- Do not allow layouts to expand infinitely with screen size
-- Do not mix desktop and mobile navigation patterns
-- Do not use `transform: scale()` for device scaling — use `zoom`
-- If a layout decision conflicts between web convenience and mobile correctness, choose mobile correctness
+- Never stretch to full browser width or height
+- Never allow horizontal scrolling unless explicitly designed
+- Never put fixed elements inside scrollable content
+- Never use static zoom values for device scaling
+- Always choose mobile correctness over web convenience

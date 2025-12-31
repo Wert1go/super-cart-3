@@ -1,0 +1,16 @@
+.cart-empty {
+  padding: 40px 20px;
+  text-align: center;
+  color: #b8b8b8;
+}
+
+.cart-empty__message {
+  margin: 0;
+  font-size: 16px;
+}
+
+.cart-empty__hint {
+  font-size: 13px;
+  margin-top: 8px;
+}
+

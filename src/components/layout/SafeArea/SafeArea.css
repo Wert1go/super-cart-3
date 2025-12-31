@@ -1,0 +1,20 @@
+.safe-area-top {
+  height: 47px;
+  background: #f4f4f4;
+  flex-shrink: 0;
+}
+
+.safe-area-bottom {
+  height: 34px;
+  background: #ffffff;
+  flex-shrink: 0;
+}
+
+.home-indicator {
+  width: 134px;
+  height: 5px;
+  background: #1a1a1a;
+  border-radius: 3px;
+  margin: 8px auto 0;
+}
+
